@@ -1,0 +1,27 @@
+export declare const styles: {
+    bold: string[];
+    italic: string[];
+    underline: string[];
+    inverse: string[];
+    strikethrough: string[];
+    white: string[];
+    grey: string[];
+    black: string[];
+    blue: string[];
+    cyan: string[];
+    green: string[];
+    magenta: string[];
+    red: string[];
+    yellow: string[];
+    whiteBG: string[];
+    greyBG: string[];
+    blackBG: string[];
+    blueBG: string[];
+    cyanBG: string[];
+    greenBG: string[];
+    magentaBG: string[];
+    redBG: string[];
+    yellowBG: string[];
+};
+export declare function formatConsole(contents: string[], color?: undefined | "white" | "grey" | "black" | "blue" | "cyan" | "green" | "magenta" | "red" | "yellow", style?: undefined | "bold" | "italic" | "underline" | "inverse" | "strikethrough", colorBG?: undefined | "whiteBG" | "greyBG" | "blackBG" | "blueBG" | "cyanBG" | "greenBG" | "magentaBG" | "redBG" | "yellowBG"): string;
+export declare function printStep(step: number, desc: string): void;
