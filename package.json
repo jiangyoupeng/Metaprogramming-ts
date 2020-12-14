@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jiangyoupeng/Metaprogramming-ts#readme",
   "dependencies": {
     "child_process": "^1.0.2",
+    "protobufjs": "^6.10.2",
     "rd": "^2.0.1",
     "xlsx": "^0.16.9"
   },
