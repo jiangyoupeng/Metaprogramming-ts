@@ -111,9 +111,7 @@ class ExcelObjData {
                 break
             }
             if (type === undefined || name == undefined) {
-                console.error(
-                    "错误的excel表 " + tableKey + " 类型和名字不能为空12312222222222222222222222222222222222222222222222222222222"
-                )
+                console.error("错误的excel表 " + tableKey + " 类型和名字不能为空")
                 return
             }
             if (this.nameSet.has(name)) {
