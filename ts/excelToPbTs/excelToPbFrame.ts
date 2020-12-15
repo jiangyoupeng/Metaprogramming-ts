@@ -13,7 +13,8 @@ export function excelToPbFrame(excelDirPath: string, projectSriptDir: string, pr
 
     let excelParsingData = new ExcelParsingData(excelDirPath, true)
     // 生成pb文件
-    let protoDirPath: string = __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToPbTs/tmpProto"
+    let protoDirPath: string =
+        __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto"
     let protoFilePath: string = protoDirPath + "/tmpProto.proto"
     removeDir(protoDirPath)
     doExcelToProtoFile(excelParsingData, protoDirPath, "tmpProto")

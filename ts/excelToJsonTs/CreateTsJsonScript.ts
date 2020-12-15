@@ -5,7 +5,7 @@ import { JypFrameDefine } from "../common/JypFrameDefine"
 let excelToTsPath = "/excelToTs"
 
 let initFuncPath: string =
-    __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToJsonTs/BaseDataManagerInitFunc.ts"
+    __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToJsonTs/BaseDataManagerInitFunc.ts"
 
 const RefrenceClassName = "Refrence"
 const BaseDataManagerClassName = "BaseDataManager"

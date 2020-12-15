@@ -5,7 +5,7 @@ import { convertExcelTypeToTsType, ExcelParsingData } from "../common/ExcelParsi
 import { JypFrameDefine } from "../common/JypFrameDefine"
 
 let initFuncPath: string =
-    __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToPbTs/PbBaseDataManagerInitFunc.ts"
+    __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/PbBaseDataManagerInitFunc.ts"
 const BaseDataManagerClassName = "BaseDataManager"
 const ExcelDataModelsClassName = "ExcelDataModels"
 const ExcelDataManagerClassName = "ExcelDataManager"
