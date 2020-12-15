@@ -191,7 +191,6 @@ export class ExcelParsingData {
     constructor(excelDirPath: string, isClient: boolean) {
         console.log("开始解析excel目录 " + excelDirPath)
         let createFiles = fs.readdirSync(excelDirPath)
-
         let tableDatas = {}
         for (let i = 0; i < createFiles.length; i++) {
             let file = createFiles[i]
