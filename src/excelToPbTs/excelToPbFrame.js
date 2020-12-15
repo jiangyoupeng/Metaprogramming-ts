@@ -13,7 +13,7 @@ function excelToPbFrame(excelDirPath, projectSriptDir, projectResDir) {
     console.log("当前启用数据框架: pbTs");
     var excelParsingData = new ExcelParsingData_1.ExcelParsingData(excelDirPath, true);
     // 生成pb文件
-    var protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToPbTs/tmpProto";
+    var protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto";
     var protoFilePath = protoDirPath + "/tmpProto.proto";
     CommonTool_1.removeDir(protoDirPath);
     ExcelToProtoFile_1.doExcelToProtoFile(excelParsingData, protoDirPath, "tmpProto");

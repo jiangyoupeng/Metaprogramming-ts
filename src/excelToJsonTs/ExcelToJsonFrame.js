@@ -11,9 +11,17 @@ function excelToJsonFrame(excelDirPath, projectSriptDir, projectResDir) {
     CreateTsJsonScript_1.doCreateTsJsonScript(excelParsingData, projectSriptDir);
 }
 exports.excelToJsonFrame = excelToJsonFrame;
+// example
+// to creator client
 // excelToJsonFrame(
-//     "F:/creatorProject/creatorPlugin/excel",
-//     "F:/creatorProject/creatorPlugin/assets",
-//     "F:/creatorProject/creatorPlugin/assets/resources/"
+//     "youProject/excel",
+//     "youProject/assets",
+//     "youProject/assets/resources/"
+// )
+// to node server
+// excelToJsonFrame(
+//     "youProject/excel",
+//     "youProject/",
+//     "youProject/resources/"
 // )
 //# sourceMappingURL=ExcelToJsonFrame.js.map
