@@ -4,13 +4,13 @@ exports.removeDir = exports.createAndWriteFileSync = void 0;
 var fs = require("fs");
 var path = require("path");
 function createAndWriteFileSync(filePath, content) {
-    var arr = filePath.split("/");
+    var arr = filePath.split(path.sep);
     var dir = arr[0];
     for (var i = 1; i < arr.length; i++) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-        dir = dir + "/" + arr[i];
+        dir = path.join(dir, arr[i]);
     }
     if (content) {
         fs.writeFileSync(filePath, content);

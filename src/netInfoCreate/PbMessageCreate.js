@@ -27,7 +27,7 @@ function encodePbData(pbPaths) {
         var data = fs.readFileSync(filePath);
         var packageName = data
             .toString()
-            .match(/package [^=]+;/)[0]
+            .match(/package [\w]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim();
@@ -66,36 +66,41 @@ function encodePbData(pbPaths) {
 function createPbMessage(pbDirPath, pbCreateDirPath) {
     var protoFiles = rd.readSync(pbDirPath);
     var pbDatas = encodePbData(protoFiles);
+    var fileAllFileMap = new Set();
+    if (fs.existsSync(pbCreateDirPath)) {
+        fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
+    }
+    //  = rd.readSync(pbCreateDirPath)
+    var packageName;
     // 写入netMessage信息
     pbDatas.forEach(function (pbData) {
-        var parser = pbData.packageName + "." + pbData.content;
-        var exportStr = "import { " + pbData.content + " } from './" + pbData.packageName + "'\n";
-        exportStr += "export function " + pbData.content + "Handle(res: " + parser + ") {\n    \n    }\n    ";
-        var filePath = path.join(pbCreateDirPath, pbData.packageName);
-        if (!fs.existsSync(filePath)) {
-            CommonTool_1.createAndWriteFileSync(filePath, exportStr);
+        if (pbData.content.lastIndexOf("Res") !== -1) {
+            if (!packageName) {
+                packageName = pbData.packageName;
+            }
+            else if (packageName !== pbData.packageName) {
+                console.error("packageName must same packageName1:" + packageName + " packageName2:" + pbData.packageName);
+            }
+            var exportStr = "import { " + pbData.packageName + " } from './" + pbData.packageName + "'\n";
+            exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";
+            var filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
+            if (!fs.existsSync(filePath)) {
+                CommonTool_1.createAndWriteFileSync(filePath, exportStr);
+            }
+            if (fileAllFileMap.has(filePath)) {
+                fileAllFileMap.delete(filePath);
+            }
         }
     });
-    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, "netPb", function () {
-        console.log("生成netPb ts文件内容完成");
+    fileAllFileMap.forEach(function (value) {
+        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
+            console.warn("不存在pb数据内的文件:" + value);
+        }
+    });
+    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+        console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
     });
 }
 exports.createPbMessage = createPbMessage;
-// 创建网络消息res,req的define
-// export function PbConfigCreate(pbDirPath: string, configTsPath: string) {
-//     if (fs.existsSync(pbDirPath)) {
-//         let allProtoFile = rd.readSync(pbDirPath)
-//         if (allProtoFile.length > 0) {
-//             console.log(allProtoFile)
-//             let pbDatas = encodePbData(allProtoFile)
-//             let content = getPbConfigContent(pbDatas)
-//             console.log(content)
-//             createAndWriteFileSync(configTsPath, content)
-//         } else {
-//             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置")
-//         }
-//     } else {
-//         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置")
-//     }
-// }
+// createPbMessage("F:/creatorProject/creatorPlugin/proto", "F:/creatorProject/creatorPlugin/assets/game/net")
 //# sourceMappingURL=PbMessageCreate.js.map

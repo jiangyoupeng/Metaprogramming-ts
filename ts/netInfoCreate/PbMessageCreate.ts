@@ -24,7 +24,7 @@ function encodePbData(pbPaths: string[]): ProtoData[] {
 
         const packageName: string = data
             .toString()
-            .match(/package [^=]+;/)[0]
+            .match(/package [\w]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim()
@@ -65,38 +65,42 @@ export function createPbMessage(pbDirPath: string, pbCreateDirPath: string) {
     let protoFiles = rd.readSync(pbDirPath)
 
     let pbDatas = encodePbData(protoFiles)
+
+    let fileAllFileMap: Set<string> = new Set()
+    if (fs.existsSync(pbCreateDirPath)) {
+        fileAllFileMap = new Set(rd.readSync(pbCreateDirPath))
+    }
+    //  = rd.readSync(pbCreateDirPath)
+
+    let packageName
     // 写入netMessage信息
     pbDatas.forEach((pbData) => {
-        let parser = pbData.packageName + `.` + pbData.content
-        let exportStr = `import { ${pbData.content} } from './${pbData.packageName}'\n`
-        exportStr += `export function ${pbData.content}Handle(res: ${parser}) {
-    
-    }
-    `
-        let filePath = path.join(pbCreateDirPath, pbData.packageName)
-        if (!fs.existsSync(filePath)) {
-            createAndWriteFileSync(filePath, exportStr)
+        if (pbData.content.lastIndexOf("Res") !== -1) {
+            if (!packageName) {
+                packageName = pbData.packageName
+            } else if (packageName !== pbData.packageName) {
+                console.error("packageName must same packageName1:" + packageName + " packageName2:" + pbData.packageName)
+            }
+            let exportStr = `import { ${pbData.packageName} } from './${pbData.packageName}'\n`
+            exportStr += `export function ${pbData.content}Handle(res: ${pbData.packageName}.${pbData.content}) {}\n`
+            let filePath = path.join(pbCreateDirPath, pbData.content + ".ts")
+            if (!fs.existsSync(filePath)) {
+                createAndWriteFileSync(filePath, exportStr)
+            }
+            if (fileAllFileMap.has(filePath)) {
+                fileAllFileMap.delete(filePath)
+            }
         }
     })
 
-    createPbts(pbCreateDirPath, pbDirPath, "netPb", () => {
-        console.log("生成netPb ts文件内容完成")
+    fileAllFileMap.forEach((value) => {
+        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
+            console.warn("不存在pb数据内的文件:" + value)
+        }
+    })
+
+    createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
+        console.log(`生成${packageName} ts文件内容完成`)
     })
 }
-// 创建网络消息res,req的define
-// export function PbConfigCreate(pbDirPath: string, configTsPath: string) {
-//     if (fs.existsSync(pbDirPath)) {
-//         let allProtoFile = rd.readSync(pbDirPath)
-//         if (allProtoFile.length > 0) {
-//             console.log(allProtoFile)
-//             let pbDatas = encodePbData(allProtoFile)
-//             let content = getPbConfigContent(pbDatas)
-//             console.log(content)
-//             createAndWriteFileSync(configTsPath, content)
-//         } else {
-//             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置")
-//         }
-//     } else {
-//         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置")
-//     }
-// }
+// createPbMessage("F:/creatorProject/creatorPlugin/proto", "F:/creatorProject/creatorPlugin/assets/game/net")

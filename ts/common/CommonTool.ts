@@ -2,13 +2,13 @@ import * as fs from "fs"
 import * as path from "path"
 
 export function createAndWriteFileSync(filePath: string, content?: any) {
-    const arr = filePath.split("/")
+    const arr = filePath.split(path.sep)
     let dir = arr[0]
     for (let i = 1; i < arr.length; i++) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
-        dir = dir + "/" + arr[i]
+        dir = path.join(dir, arr[i])
     }
     if (content) {
         fs.writeFileSync(filePath, content)
