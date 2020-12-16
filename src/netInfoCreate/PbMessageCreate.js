@@ -24,14 +24,19 @@ function encodePbData(pbPaths) {
         if (fs.statSync(filePath).isDirectory()) {
             continue;
         }
-        var data = fs.readFileSync(filePath);
-        var packageName = data
-            .toString()
+        // 去掉注释
+        var dataStr = fs.readFileSync(filePath).toString();
+        var commentStr = dataStr.match(/\/\/[^\n\r]+/g);
+        for (var index = 0; index < commentStr.length; index++) {
+            var element = commentStr[index];
+            dataStr = dataStr.replace(element, "");
+        }
+        var packageName = dataStr
             .match(/package [\w]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim();
-        var allMessageData = data.toString().match(/(message )\S+(\s{0,}{)/g);
+        var allMessageData = dataStr.match(/(message )\S+(\s{0,}{)/g);
         for (var j = 0; j < allMessageData.length; j++) {
             var pbData = new ProtoData();
             var message = allMessageData[j];

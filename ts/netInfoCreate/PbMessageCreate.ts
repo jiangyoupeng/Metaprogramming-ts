@@ -20,15 +20,20 @@ function encodePbData(pbPaths: string[]): ProtoData[] {
         if (fs.statSync(filePath).isDirectory()) {
             continue
         }
-        let data = fs.readFileSync(filePath)
+        // 去掉注释
+        let dataStr = fs.readFileSync(filePath).toString()
+        let commentStr = dataStr.match(/\/\/[^\n\r]+/g)
+        for (let index = 0; index < commentStr.length; index++) {
+            const element = commentStr[index]
+            dataStr = dataStr.replace(element, "")
+        }
 
-        const packageName: string = data
-            .toString()
+        const packageName: string = dataStr
             .match(/package [\w]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim()
-        let allMessageData = data.toString().match(/(message )\S+(\s{0,}{)/g)
+        let allMessageData = dataStr.match(/(message )\S+(\s{0,}{)/g)
 
         for (let j = 0; j < allMessageData.length; j++) {
             let pbData = new ProtoData()
