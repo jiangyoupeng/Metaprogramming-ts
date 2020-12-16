@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PbConfigCreate = void 0;
+exports.createPbMessage = void 0;
+// 生成网络pbMessage及引用
 // 生成网络pbConfig信息
 var fs = require("fs");
 var rd = require("rd");
+var path = require("path");
 var CommonTool_1 = require("../common/CommonTool");
+var CreatePBTs_1 = require("../common/CreatePBTs");
 var ProtoData = /** @class */ (function () {
     function ProtoData() {
         this.content = "";
@@ -13,6 +16,7 @@ var ProtoData = /** @class */ (function () {
     }
     return ProtoData;
 }());
+// 收发协议必须以Res和Req結尾
 function encodePbData(pbPaths) {
     var pbDatas = [];
     for (var i = 0; i < pbPaths.length; i++) {
@@ -59,54 +63,39 @@ function encodePbData(pbPaths) {
     }
     return pbDatas;
 }
-function getPbConfigContent(pbDatas) {
-    var tab1 = " ".repeat(4);
-    var tab2 = " ".repeat(8);
-    var content = "export abstract class PBConfig {\n";
-    var packageNameSet = new Set();
-    pbDatas.forEach(function (pbData) {
-        packageNameSet.add(pbData.packageName);
-        content +=
-            tab1 +
-                "static readonly " +
-                pbData.packageName +
-                pbData.content +
-                ": string = '" +
-                pbData.packageName +
-                "." +
-                pbData.content +
-                "'\n";
-    });
-    content += tab1 + "static readonly Mapping = {\n";
+function createPbMessage(pbDirPath, pbCreateDirPath) {
+    var protoFiles = rd.readSync(pbDirPath);
+    var pbDatas = encodePbData(protoFiles);
+    // 写入netMessage信息
     pbDatas.forEach(function (pbData) {
         var parser = pbData.packageName + "." + pbData.content;
-        content += tab2 + "'" + parser + "':{ parser: " + parser + "},\n";
+        var exportStr = "import { " + pbData.content + " } from './" + pbData.packageName + "'\n";
+        exportStr += "export function " + pbData.content + "Handle(res: " + parser + ") {\n    \n    }\n    ";
+        var filePath = path.join(pbCreateDirPath, pbData.packageName);
+        if (!fs.existsSync(filePath)) {
+            CommonTool_1.createAndWriteFileSync(filePath, exportStr);
+        }
     });
-    content += tab1 + "}\n";
-    content += "}\n";
-    packageNameSet.forEach(function (value) {
-        content = "import { " + value + " } from './pb'\n" + content;
+    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, "netPb", function () {
+        console.log("生成netPb ts文件内容完成");
     });
-    return content;
 }
+exports.createPbMessage = createPbMessage;
 // 创建网络消息res,req的define
-function PbConfigCreate(pbDirPath, configTsPath) {
-    if (fs.existsSync(pbDirPath)) {
-        var allProtoFile = rd.readSync(pbDirPath);
-        if (allProtoFile.length > 0) {
-            console.log(allProtoFile);
-            var pbDatas = encodePbData(allProtoFile);
-            var content = getPbConfigContent(pbDatas);
-            console.log(content);
-            CommonTool_1.createAndWriteFileSync(configTsPath, content);
-        }
-        else {
-            console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置");
-        }
-    }
-    else {
-        console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置");
-    }
-}
-exports.PbConfigCreate = PbConfigCreate;
-//# sourceMappingURL=PbConfigCreate.js.map
+// export function PbConfigCreate(pbDirPath: string, configTsPath: string) {
+//     if (fs.existsSync(pbDirPath)) {
+//         let allProtoFile = rd.readSync(pbDirPath)
+//         if (allProtoFile.length > 0) {
+//             console.log(allProtoFile)
+//             let pbDatas = encodePbData(allProtoFile)
+//             let content = getPbConfigContent(pbDatas)
+//             console.log(content)
+//             createAndWriteFileSync(configTsPath, content)
+//         } else {
+//             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置")
+//         }
+//     } else {
+//         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置")
+//     }
+// }
+//# sourceMappingURL=PbMessageCreate.js.map

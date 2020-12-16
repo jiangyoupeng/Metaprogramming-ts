@@ -1,13 +1,18 @@
+// 生成网络pbMessage及引用
 // 生成网络pbConfig信息
 import * as fs from "fs"
 import * as rd from "rd"
+import * as path from "path"
 import { createAndWriteFileSync } from "../common/CommonTool"
+import { createPbts } from "../common/CreatePBTs"
 
 class ProtoData {
     content: string = ""
     isRes: boolean = true
     packageName: string = ""
 }
+
+// 收发协议必须以Res和Req結尾
 function encodePbData(pbPaths: string[]): ProtoData[] {
     let pbDatas: ProtoData[] = []
     for (let i = 0; i < pbPaths.length; i++) {
@@ -56,52 +61,42 @@ function encodePbData(pbPaths: string[]): ProtoData[] {
     return pbDatas
 }
 
-function getPbConfigContent(pbDatas: ProtoData[]): string {
-    const tab1: string = " ".repeat(4)
-    const tab2: string = " ".repeat(8)
-    let content = `export abstract class PBConfig {\n`
-    let packageNameSet: Set<string> = new Set()
-    pbDatas.forEach((pbData) => {
-        packageNameSet.add(pbData.packageName)
-        content +=
-            tab1 +
-            `static readonly ` +
-            pbData.packageName +
-            pbData.content +
-            `: string = '` +
-            pbData.packageName +
-            `.` +
-            pbData.content +
-            `'\n`
-    })
-    content += tab1 + `static readonly Mapping = {\n`
+export function createPbMessage(pbDirPath: string, pbCreateDirPath: string) {
+    let protoFiles = rd.readSync(pbDirPath)
+
+    let pbDatas = encodePbData(protoFiles)
+    // 写入netMessage信息
     pbDatas.forEach((pbData) => {
         let parser = pbData.packageName + `.` + pbData.content
-        content += tab2 + `'` + parser + `':{ parser: ` + parser + `},\n`
-    })
-    content += tab1 + `}\n`
-    content += `}\n`
-
-    packageNameSet.forEach((value) => {
-        content = `import { ${value} } from './pb'\n` + content
-    })
-    return content
-}
-
-// 创建网络消息res,req的define
-export function PbConfigCreate(pbDirPath: string, configTsPath: string) {
-    if (fs.existsSync(pbDirPath)) {
-        let allProtoFile = rd.readSync(pbDirPath)
-        if (allProtoFile.length > 0) {
-            console.log(allProtoFile)
-            let pbDatas = encodePbData(allProtoFile)
-            let content = getPbConfigContent(pbDatas)
-            console.log(content)
-            createAndWriteFileSync(configTsPath, content)
-        } else {
-            console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置")
-        }
-    } else {
-        console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置")
+        let exportStr = `import { ${pbData.content} } from './${pbData.packageName}'\n`
+        exportStr += `export function ${pbData.content}Handle(res: ${parser}) {
+    
     }
+    `
+        let filePath = path.join(pbCreateDirPath, pbData.packageName)
+        if (!fs.existsSync(filePath)) {
+            createAndWriteFileSync(filePath, exportStr)
+        }
+    })
+
+    createPbts(pbCreateDirPath, pbDirPath, "netPb", () => {
+        console.log("生成netPb ts文件内容完成")
+    })
 }
+// 创建网络消息res,req的define
+// export function PbConfigCreate(pbDirPath: string, configTsPath: string) {
+//     if (fs.existsSync(pbDirPath)) {
+//         let allProtoFile = rd.readSync(pbDirPath)
+//         if (allProtoFile.length > 0) {
+//             console.log(allProtoFile)
+//             let pbDatas = encodePbData(allProtoFile)
+//             let content = getPbConfigContent(pbDatas)
+//             console.log(content)
+//             createAndWriteFileSync(configTsPath, content)
+//         } else {
+//             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置")
+//         }
+//     } else {
+//         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置")
+//     }
+// }
