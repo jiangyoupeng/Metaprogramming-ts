@@ -84,7 +84,7 @@ function createPbMessage(pbDirPath, pbCreateDirPath) {
                 packageName = pbData.packageName;
             }
             else if (packageName !== pbData.packageName) {
-                console.error("packageName must same packageName1:" + packageName + " packageName2:" + pbData.packageName);
+                console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName);
             }
             var exportStr = "import { " + pbData.packageName + " } from './" + pbData.packageName + "'\n";
             exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";

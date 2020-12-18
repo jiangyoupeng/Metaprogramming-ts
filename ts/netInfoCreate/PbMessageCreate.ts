@@ -84,7 +84,7 @@ export function createPbMessage(pbDirPath: string, pbCreateDirPath: string) {
             if (!packageName) {
                 packageName = pbData.packageName
             } else if (packageName !== pbData.packageName) {
-                console.error("packageName must same packageName1:" + packageName + " packageName2:" + pbData.packageName)
+                console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName)
             }
             let exportStr = `import { ${pbData.packageName} } from './${pbData.packageName}'\n`
             exportStr += `export function ${pbData.content}Handle(res: ${pbData.packageName}.${pbData.content}) {}\n`
