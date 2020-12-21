@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPbMessage = void 0;
+exports.createServerPbMessage = exports.createClientPbMessage = void 0;
 // 生成网络pbMessage及引用
 // 生成网络pbConfig信息
 var fs = require("fs");
@@ -68,14 +68,13 @@ function encodePbData(pbPaths) {
     }
     return pbDatas;
 }
-function createPbMessage(pbDirPath, pbCreateDirPath) {
+function createClientPbMessage(pbDirPath, pbCreateDirPath) {
     var protoFiles = rd.readSync(pbDirPath);
     var pbDatas = encodePbData(protoFiles);
     var fileAllFileMap = new Set();
     if (fs.existsSync(pbCreateDirPath)) {
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
     }
-    //  = rd.readSync(pbCreateDirPath)
     var packageName;
     // 写入netMessage信息
     pbDatas.forEach(function (pbData) {
@@ -106,6 +105,44 @@ function createPbMessage(pbDirPath, pbCreateDirPath) {
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
     });
 }
-exports.createPbMessage = createPbMessage;
+exports.createClientPbMessage = createClientPbMessage;
+function createServerPbMessage(pbDirPath, pbCreateDirPath) {
+    var protoFiles = rd.readSync(pbDirPath);
+    var pbDatas = encodePbData(protoFiles);
+    var fileAllFileMap = new Set();
+    if (fs.existsSync(pbCreateDirPath)) {
+        fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
+    }
+    var packageName;
+    // 写入netMessage信息
+    pbDatas.forEach(function (pbData) {
+        if (pbData.content.lastIndexOf("Req") !== -1) {
+            if (!packageName) {
+                packageName = pbData.packageName;
+            }
+            else if (packageName !== pbData.packageName) {
+                console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName);
+            }
+            var exportStr = "import { " + pbData.packageName + " } from './" + pbData.packageName + "'\n";
+            exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";
+            var filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
+            if (!fs.existsSync(filePath)) {
+                CommonTool_1.createAndWriteFileSync(filePath, exportStr);
+            }
+            if (fileAllFileMap.has(filePath)) {
+                fileAllFileMap.delete(filePath);
+            }
+        }
+    });
+    fileAllFileMap.forEach(function (value) {
+        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
+            console.warn("不存在pb数据内的文件:" + value);
+        }
+    });
+    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+        console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
+    });
+}
+exports.createServerPbMessage = createServerPbMessage;
 // createPbMessage("F:/creatorProject/creatorPlugin/proto", "F:/creatorProject/creatorPlugin/assets/game/net")
 //# sourceMappingURL=PbMessageCreate.js.map
