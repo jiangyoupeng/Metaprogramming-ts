@@ -26,8 +26,8 @@ function excelToPbFrame(excelDirPath, projectSriptDir, projectResDir) {
 }
 exports.excelToPbFrame = excelToPbFrame;
 // excelToPbFrame(
-//     "F:/creatorProject/creatorPlugin/excel",
-//     "F:/creatorProject/creatorPlugin/assets",
-//     "F:/creatorProject/creatorPlugin/assets/resources/"
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/excel",
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/assets",
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/resources/"
 // )
 //# sourceMappingURL=excelToPbFrame.js.map

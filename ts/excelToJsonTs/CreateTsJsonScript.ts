@@ -178,4 +178,4 @@ export function createTsJsonScript(excelDirPath: string, projectScriptPath: stri
     doCreateTsJsonScript(excelParsingData, projectScriptPath)
 }
 
-// createTsJsonScript("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets")
+// createTsJsonScript("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")

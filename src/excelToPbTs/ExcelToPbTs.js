@@ -176,5 +176,5 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
     });
 }
 exports.excelToPbTs = excelToPbTs;
-// excelToPbTs("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets")
+// excelToPbTs("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")
 //# sourceMappingURL=ExcelToPbTs.js.map

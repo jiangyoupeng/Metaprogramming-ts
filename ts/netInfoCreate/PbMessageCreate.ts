@@ -67,48 +67,14 @@ function encodePbData(pbPaths: string[]): ProtoData[] {
 }
 
 export function createClientPbMessage(pbDirPath: string, pbCreateDirPath: string) {
-    let protoFiles = rd.readSync(pbDirPath)
-
-    let pbDatas = encodePbData(protoFiles)
-
-    let fileAllFileMap: Set<string> = new Set()
-    if (fs.existsSync(pbCreateDirPath)) {
-        fileAllFileMap = new Set(rd.readSync(pbCreateDirPath))
-    }
-
-    let packageName
-    // 写入netMessage信息
-    pbDatas.forEach((pbData) => {
-        if (pbData.content.lastIndexOf("Res") !== -1) {
-            if (!packageName) {
-                packageName = pbData.packageName
-            } else if (packageName !== pbData.packageName) {
-                console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName)
-            }
-            let exportStr = `import { ${pbData.packageName} } from './${pbData.packageName}'\n`
-            exportStr += `export function ${pbData.content}Handle(res: ${pbData.packageName}.${pbData.content}) {}\n`
-            let filePath = path.join(pbCreateDirPath, pbData.content + ".ts")
-            if (!fs.existsSync(filePath)) {
-                createAndWriteFileSync(filePath, exportStr)
-            }
-            if (fileAllFileMap.has(filePath)) {
-                fileAllFileMap.delete(filePath)
-            }
-        }
-    })
-
-    fileAllFileMap.forEach((value) => {
-        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
-            console.warn("不存在pb数据内的文件:" + value)
-        }
-    })
-
-    createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
-        console.log(`生成${packageName} ts文件内容完成`)
-    })
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res")
 }
 
 export function createServerPbMessage(pbDirPath: string, pbCreateDirPath: string) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req")
+}
+
+function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchStr: string) {
     let protoFiles = rd.readSync(pbDirPath)
 
     let pbDatas = encodePbData(protoFiles)
@@ -118,10 +84,11 @@ export function createServerPbMessage(pbDirPath: string, pbCreateDirPath: string
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath))
     }
 
-    let packageName
+    let netMsgRef = "export class NetMsgRef {\n"
+    let packageName = ""
     // 写入netMessage信息
     pbDatas.forEach((pbData) => {
-        if (pbData.content.lastIndexOf("Req") !== -1) {
+        if (pbData.content.lastIndexOf(matchStr) !== -1) {
             if (!packageName) {
                 packageName = pbData.packageName
             } else if (packageName !== pbData.packageName) {
@@ -136,18 +103,32 @@ export function createServerPbMessage(pbDirPath: string, pbCreateDirPath: string
             if (fileAllFileMap.has(filePath)) {
                 fileAllFileMap.delete(filePath)
             }
+            netMsgRef = `import {${pbData.content}Handle} from './${pbData.content}'\n` + netMsgRef
+            netMsgRef += `    static readonly ${pbData.content}Handle = ${pbData.content}Handle\n`
         }
     })
+    netMsgRef += "}"
 
+    let refPath = path.join(pbCreateDirPath, "NetMsgRef.ts")
     fileAllFileMap.forEach((value) => {
-        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
+        if (
+            value.lastIndexOf(".ts") !== -1 &&
+            value.lastIndexOf(".meta") === -1 &&
+            value.lastIndexOf(".d.ts") === -1 &&
+            value.lastIndexOf(refPath) === -1
+        ) {
             console.warn("不存在pb数据内的文件:" + value)
         }
     })
 
+    console.log(netMsgRef)
+    createAndWriteFileSync(refPath, netMsgRef)
     createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
         console.log(`生成${packageName} ts文件内容完成`)
     })
 }
 
-// createPbMessage("F:/creatorProject/creatorPlugin/proto", "F:/creatorProject/creatorPlugin/assets/game/net")
+createClientPbMessage(
+    "F:/creatorProject/creatorPlugin_3_0_0_preview/proto",
+    "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net"
+)

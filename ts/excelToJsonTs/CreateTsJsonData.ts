@@ -91,4 +91,4 @@ export function createTsJsonData(excelDirPath: string, projectResource: string) 
     doCreateTsJsonData(excelParsingData, projectResource)
 }
 
-// createTsJsonData("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets/resources/")
+// createTsJsonData("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/resources/")

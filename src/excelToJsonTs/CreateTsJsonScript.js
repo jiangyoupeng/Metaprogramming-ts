@@ -158,5 +158,5 @@ function createTsJsonScript(excelDirPath, projectScriptPath) {
     doCreateTsJsonScript(excelParsingData, projectScriptPath);
 }
 exports.createTsJsonScript = createTsJsonScript;
-// createTsJsonScript("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets")
+// createTsJsonScript("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")
 //# sourceMappingURL=CreateTsJsonScript.js.map

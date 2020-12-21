@@ -69,54 +69,25 @@ function encodePbData(pbPaths) {
     return pbDatas;
 }
 function createClientPbMessage(pbDirPath, pbCreateDirPath) {
-    var protoFiles = rd.readSync(pbDirPath);
-    var pbDatas = encodePbData(protoFiles);
-    var fileAllFileMap = new Set();
-    if (fs.existsSync(pbCreateDirPath)) {
-        fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
-    }
-    var packageName;
-    // 写入netMessage信息
-    pbDatas.forEach(function (pbData) {
-        if (pbData.content.lastIndexOf("Res") !== -1) {
-            if (!packageName) {
-                packageName = pbData.packageName;
-            }
-            else if (packageName !== pbData.packageName) {
-                console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName);
-            }
-            var exportStr = "import { " + pbData.packageName + " } from './" + pbData.packageName + "'\n";
-            exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";
-            var filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
-            if (!fs.existsSync(filePath)) {
-                CommonTool_1.createAndWriteFileSync(filePath, exportStr);
-            }
-            if (fileAllFileMap.has(filePath)) {
-                fileAllFileMap.delete(filePath);
-            }
-        }
-    });
-    fileAllFileMap.forEach(function (value) {
-        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
-            console.warn("不存在pb数据内的文件:" + value);
-        }
-    });
-    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
-        console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
-    });
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res");
 }
 exports.createClientPbMessage = createClientPbMessage;
 function createServerPbMessage(pbDirPath, pbCreateDirPath) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req");
+}
+exports.createServerPbMessage = createServerPbMessage;
+function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr) {
     var protoFiles = rd.readSync(pbDirPath);
     var pbDatas = encodePbData(protoFiles);
     var fileAllFileMap = new Set();
     if (fs.existsSync(pbCreateDirPath)) {
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
     }
-    var packageName;
+    var netMsgRef = "export class NetMsgRef {\n";
+    var packageName = "";
     // 写入netMessage信息
     pbDatas.forEach(function (pbData) {
-        if (pbData.content.lastIndexOf("Req") !== -1) {
+        if (pbData.content.lastIndexOf(matchStr) !== -1) {
             if (!packageName) {
                 packageName = pbData.packageName;
             }
@@ -132,17 +103,25 @@ function createServerPbMessage(pbDirPath, pbCreateDirPath) {
             if (fileAllFileMap.has(filePath)) {
                 fileAllFileMap.delete(filePath);
             }
+            netMsgRef = "import {" + pbData.content + "Handle} from './" + pbData.content + "'\n" + netMsgRef;
+            netMsgRef += "    static readonly " + pbData.content + "Handle = " + pbData.content + "Handle\n";
         }
     });
+    netMsgRef += "}";
+    var refPath = path.join(pbCreateDirPath, "NetMsgRef.ts");
     fileAllFileMap.forEach(function (value) {
-        if (value.lastIndexOf(".ts") !== -1 && value.lastIndexOf(".meta") === -1 && value.lastIndexOf(".d.ts") === -1) {
+        if (value.lastIndexOf(".ts") !== -1 &&
+            value.lastIndexOf(".meta") === -1 &&
+            value.lastIndexOf(".d.ts") === -1 &&
+            value.lastIndexOf(refPath) === -1) {
             console.warn("不存在pb数据内的文件:" + value);
         }
     });
+    console.log(netMsgRef);
+    CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
     CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
     });
 }
-exports.createServerPbMessage = createServerPbMessage;
-// createPbMessage("F:/creatorProject/creatorPlugin/proto", "F:/creatorProject/creatorPlugin/assets/game/net")
+createClientPbMessage("F:/creatorProject/creatorPlugin_3_0_0_preview/proto", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net");
 //# sourceMappingURL=PbMessageCreate.js.map

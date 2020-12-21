@@ -196,4 +196,4 @@ export class ExcelDataManager extends ${BaseDataManagerClassName} {}`
     })
 }
 
-// excelToPbTs("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets")
+// excelToPbTs("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")

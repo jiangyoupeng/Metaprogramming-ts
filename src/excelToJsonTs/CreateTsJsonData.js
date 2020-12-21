@@ -99,5 +99,5 @@ function createTsJsonData(excelDirPath, projectResource) {
     doCreateTsJsonData(excelParsingData, projectResource);
 }
 exports.createTsJsonData = createTsJsonData;
-// createTsJsonData("F:/creatorProject/creatorPlugin/excel", "F:/creatorProject/creatorPlugin/assets/resources/")
+// createTsJsonData("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/resources/")
 //# sourceMappingURL=CreateTsJsonData.js.map

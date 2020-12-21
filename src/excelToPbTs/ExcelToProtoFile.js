@@ -56,5 +56,5 @@ function excelToProtoFile(excelDirPath, protoDirPath) {
 }
 exports.excelToProtoFile = excelToProtoFile;
 // let protoDirPath: string = __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToPbTs/tmpProto"
-// excelToProtoFile("F:/creatorProject/creatorPlugin/excel", protoDirPath)
+// excelToProtoFile("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", protoDirPath)
 //# sourceMappingURL=ExcelToProtoFile.js.map
