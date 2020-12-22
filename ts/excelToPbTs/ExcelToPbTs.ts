@@ -189,7 +189,12 @@ export class ExcelDataManager extends ${BaseDataManagerClassName} {}`
     createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent)
     createAndWriteFileSync(baseDataPath)
     createPbts(baseDataPath, protoDirPath, "excelPb", () => {
-        console.log("生成ts文件内容完成")
+        // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
+        let data = fs.readFileSync(`${baseDataPath}/excelPb.js`)
+        let content = data.toString()
+        content = content.replace(`import * as $protobuf from "protobufjs/minimal"`, "const $protobuf = protobuf")
+        createAndWriteFileSync(`${baseDataPath}/excelPb.js`, content)
+        console.log("替换excelPb内容成功")
         if (overCall) {
             overCall()
         }

@@ -130,6 +130,15 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
     createAndWriteFileSync(refPath, netMsgRef)
     createAndWriteFileSync(pbRefPath, netPbClassRef)
     createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
+        // 仅在客户端使用的时候需要替换
+        if (matchStr == "Res") {
+            // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
+            let data = fs.readFileSync(`${pbCreateDirPath}/${packageName}.js`)
+            let content = data.toString()
+            content = content.replace(`import * as $protobuf from "protobufjs/minimal"`, "const $protobuf = protobuf")
+            createAndWriteFileSync(`${pbCreateDirPath}/${packageName}.js`, content)
+        }
+
         console.log(`生成${packageName} ts文件内容完成`)
         if (callback) {
             callback()
