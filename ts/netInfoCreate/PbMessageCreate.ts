@@ -66,15 +66,15 @@ function encodePbData(pbPaths: string[]): ProtoData[] {
     return pbDatas
 }
 
-export function createClientPbMessage(pbDirPath: string, pbCreateDirPath: string) {
-    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res")
+export function createClientPbMessage(pbDirPath: string, pbCreateDirPath: string, callback: Function) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res", callback)
 }
 
-export function createServerPbMessage(pbDirPath: string, pbCreateDirPath: string) {
-    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req")
+export function createServerPbMessage(pbDirPath: string, pbCreateDirPath: string, callback: Function) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req", callback)
 }
 
-function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchStr: string) {
+function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchStr: string, callback: Function) {
     let protoFiles = rd.readSync(pbDirPath)
 
     let pbDatas = encodePbData(protoFiles)
@@ -127,11 +127,13 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
         }
     })
 
-    console.log(netMsgRef)
     createAndWriteFileSync(refPath, netMsgRef)
     createAndWriteFileSync(pbRefPath, netPbClassRef)
     createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
         console.log(`生成${packageName} ts文件内容完成`)
+        if (callback) {
+            callback()
+        }
     })
 }
 

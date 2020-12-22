@@ -68,15 +68,15 @@ function encodePbData(pbPaths) {
     }
     return pbDatas;
 }
-function createClientPbMessage(pbDirPath, pbCreateDirPath) {
-    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res");
+function createClientPbMessage(pbDirPath, pbCreateDirPath, callback) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res", callback);
 }
 exports.createClientPbMessage = createClientPbMessage;
-function createServerPbMessage(pbDirPath, pbCreateDirPath) {
-    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req");
+function createServerPbMessage(pbDirPath, pbCreateDirPath, callback) {
+    _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req", callback);
 }
 exports.createServerPbMessage = createServerPbMessage;
-function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr) {
+function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     var protoFiles = rd.readSync(pbDirPath);
     var pbDatas = encodePbData(protoFiles);
     var fileAllFileMap = new Set();
@@ -123,12 +123,17 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr) {
             console.warn("不存在pb数据内的文件:" + value);
         }
     });
-    console.log(netMsgRef);
     CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
     CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
     CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
+        if (callback) {
+            callback();
+        }
     });
 }
-createClientPbMessage("F:/creatorProject/creatorPlugin_3_0_0_preview/proto", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net");
+// createClientPbMessage(
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/proto",
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net"
+// )
 //# sourceMappingURL=PbMessageCreate.js.map
