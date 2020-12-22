@@ -131,7 +131,7 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
     createAndWriteFileSync(pbRefPath, netPbClassRef)
     let esTarget = "es6"
     if (matchStr == "Req") {
-        esTarget = "es5"
+        esTarget = "commonjs"
     }
 
     createPbts(pbCreateDirPath, pbDirPath, packageName, esTarget, () => {

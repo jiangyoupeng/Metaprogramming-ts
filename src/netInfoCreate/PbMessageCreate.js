@@ -127,7 +127,7 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
     var esTarget = "es6";
     if (matchStr == "Req") {
-        esTarget = "es5";
+        esTarget = "commonjs";
     }
     CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, esTarget, function () {
         // 仅在客户端使用的时候需要替换
