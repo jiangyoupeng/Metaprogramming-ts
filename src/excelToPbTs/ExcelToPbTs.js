@@ -168,7 +168,7 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
         ("import { " + BaseDataManagerClassName + " } from '../readonly/" + BaseDataManagerClassName + "'\nexport class ExcelDataManager extends " + BaseDataManagerClassName + " {}");
     CommonTool_1.createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent);
     CommonTool_1.createAndWriteFileSync(baseDataPath);
-    CreatePBTs_1.createPbts(baseDataPath, protoDirPath, "excelPb", function () {
+    CreatePBTs_1.createPbts(baseDataPath, protoDirPath, "excelPb", "es6", function () {
         // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
         var data = fs.readFileSync(baseDataPath + "/excelPb.js");
         var content = data.toString();

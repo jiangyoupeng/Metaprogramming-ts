@@ -129,7 +129,12 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
 
     createAndWriteFileSync(refPath, netMsgRef)
     createAndWriteFileSync(pbRefPath, netPbClassRef)
-    createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
+    let esTarget = "es6"
+    if (matchStr == "Req") {
+        esTarget = "es5"
+    }
+
+    createPbts(pbCreateDirPath, pbDirPath, packageName, "es6", () => {
         // 仅在客户端使用的时候需要替换
         if (matchStr == "Res") {
             // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题

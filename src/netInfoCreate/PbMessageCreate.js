@@ -125,7 +125,11 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     });
     CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
     CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
-    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+    var esTarget = "es6";
+    if (matchStr == "Req") {
+        esTarget = "es5";
+    }
+    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, "es6", function () {
         // 仅在客户端使用的时候需要替换
         if (matchStr == "Res") {
             // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题

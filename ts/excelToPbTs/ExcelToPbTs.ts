@@ -188,7 +188,7 @@ export class ExcelDataManager extends ${BaseDataManagerClassName} {}`
 
     createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent)
     createAndWriteFileSync(baseDataPath)
-    createPbts(baseDataPath, protoDirPath, "excelPb", () => {
+    createPbts(baseDataPath, protoDirPath, "excelPb", "es6", () => {
         // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
         let data = fs.readFileSync(`${baseDataPath}/excelPb.js`)
         let content = data.toString()
