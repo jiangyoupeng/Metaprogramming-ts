@@ -1,10 +1,17 @@
-import { spawn } from "child_process";
-import { formatConsole } from "./ConsoleUtils";
-const _cmds = [];
-let _running = false;
-export function cmd(...cmds) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.cmdSilence = exports.cmd = void 0;
+var child_process_1 = require("child_process");
+var ConsoleUtils_1 = require("./ConsoleUtils");
+var _cmds = [];
+var _running = false;
+function cmd() {
+    var cmds = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        cmds[_i] = arguments[_i];
+    }
     // const process: ChildProcess = spawn()
-    cmds.map((cmd) => {
+    cmds.map(function (cmd) {
         if (typeof cmd === "function") {
             _cmds.push(cmd);
         }
@@ -17,8 +24,13 @@ export function cmd(...cmds) {
         nextCmd(false);
     }
 }
-export function cmdSilence(...cmds) {
-    cmds.map((cmd) => {
+exports.cmd = cmd;
+function cmdSilence() {
+    var cmds = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        cmds[_i] = arguments[_i];
+    }
+    cmds.map(function (cmd) {
         if (typeof cmd === "function") {
             _cmds.push(cmd);
         }
@@ -31,23 +43,24 @@ export function cmdSilence(...cmds) {
         nextCmd(true);
     }
 }
+exports.cmdSilence = cmdSilence;
 function nextCmd(silence) {
     var _a;
-    const cmd = _cmds.shift();
+    var cmd = _cmds.shift();
     if (typeof cmd === "function") {
         cmd();
         nextCmd(silence);
     }
     else if (cmd) {
-        console.log(formatConsole([cmd], "grey"));
-        const args = cmd.split(" ");
-        const command = (process.platform === "win32" ? (_a = args === null || args === void 0 ? void 0 : args.shift()) === null || _a === void 0 ? void 0 : _a.replace("npm", "npm.cmd") : args.shift());
-        const childProcess = spawn(command, args, { stdio: "inherit" });
-        childProcess.on("error", (err) => {
+        console.log(ConsoleUtils_1.formatConsole([cmd], "grey"));
+        var args = cmd.split(" ");
+        var command = (process.platform === "win32" ? (_a = args === null || args === void 0 ? void 0 : args.shift()) === null || _a === void 0 ? void 0 : _a.replace("npm", "npm.cmd") : args.shift());
+        var childProcess = child_process_1.spawn(command, args, { stdio: "inherit" });
+        childProcess.on("error", function (err) {
             console.log("cmd error:", JSON.stringify(err));
             nextCmd(silence);
         });
-        childProcess.on("exit", (code, signal) => {
+        childProcess.on("exit", function (code, signal) {
             if (code !== 0 || signal != null) {
                 console.log("exit code:", code, signal);
             }

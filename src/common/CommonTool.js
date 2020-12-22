@@ -1,9 +1,12 @@
-import * as fs from "fs";
-import * as path from "path";
-export function createAndWriteFileSync(filePath, content) {
-    const arr = filePath.split(path.sep);
-    let dir = arr[0];
-    for (let i = 1; i < arr.length; i++) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.removeDir = exports.createAndWriteFileSync = void 0;
+var fs = require("fs");
+var path = require("path");
+function createAndWriteFileSync(filePath, content) {
+    var arr = filePath.split(path.sep);
+    var dir = arr[0];
+    for (var i = 1; i < arr.length; i++) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
@@ -19,12 +22,13 @@ export function createAndWriteFileSync(filePath, content) {
     }
     console.log("写入文件/文件夹 " + filePath + " 成功");
 }
-export function removeDir(dir) {
+exports.createAndWriteFileSync = createAndWriteFileSync;
+function removeDir(dir) {
     if (fs.existsSync(dir)) {
-        let files = fs.readdirSync(dir);
+        var files = fs.readdirSync(dir);
         for (var i = 0; i < files.length; i++) {
-            let newPath = path.join(dir, files[i]);
-            let stat = fs.statSync(newPath);
+            var newPath = path.join(dir, files[i]);
+            var stat = fs.statSync(newPath);
             if (stat.isDirectory()) {
                 //如果是文件夹就递归下去
                 removeDir(newPath);
@@ -38,4 +42,5 @@ export function removeDir(dir) {
         console.log("删除文件夹 " + dir);
     }
 }
+exports.removeDir = removeDir;
 //# sourceMappingURL=CommonTool.js.map

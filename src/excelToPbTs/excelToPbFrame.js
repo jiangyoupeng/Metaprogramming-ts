@@ -1,26 +1,30 @@
+"use strict";
 // 生成ts脚本和pb数据
-import { ExcelParsingData } from "../common/ExcelParsingData";
-import { excelToPbData } from "./ExcelToPbData";
-import { excelToPbTs } from "./ExcelToPbTs";
-import { doExcelToProtoFile } from "./ExcelToProtoFile";
-import { JypFrameDefine } from "../common/JypFrameDefine";
-import { removeDir } from "../common/CommonTool";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.excelToPbFrame = void 0;
+var ExcelParsingData_1 = require("../common/ExcelParsingData");
+var ExcelToPbData_1 = require("./ExcelToPbData");
+var ExcelToPbTs_1 = require("./ExcelToPbTs");
+var ExcelToProtoFile_1 = require("./ExcelToProtoFile");
+var JypFrameDefine_1 = require("../common/JypFrameDefine");
+var CommonTool_1 = require("../common/CommonTool");
 // 生成的临时 proto会删除
-export function excelToPbFrame(excelDirPath, projectSriptDir, projectResDir) {
+function excelToPbFrame(excelDirPath, projectSriptDir, projectResDir) {
     console.log("当前启用数据框架: pbTs");
-    let excelParsingData = new ExcelParsingData(excelDirPath, true);
+    var excelParsingData = new ExcelParsingData_1.ExcelParsingData(excelDirPath, true);
     // 生成pb文件
-    let protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto";
-    let protoFilePath = protoDirPath + "/tmpProto.proto";
-    removeDir(protoDirPath);
-    doExcelToProtoFile(excelParsingData, protoDirPath, "tmpProto");
-    let writeDirPath = projectResDir + JypFrameDefine.frameCodeCreateExcelDataResName;
-    excelToPbData(excelParsingData, protoFilePath, writeDirPath);
-    excelToPbTs(excelParsingData, projectSriptDir, protoDirPath, () => {
+    var protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto";
+    var protoFilePath = protoDirPath + "/tmpProto.proto";
+    CommonTool_1.removeDir(protoDirPath);
+    ExcelToProtoFile_1.doExcelToProtoFile(excelParsingData, protoDirPath, "tmpProto");
+    var writeDirPath = projectResDir + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName;
+    ExcelToPbData_1.excelToPbData(excelParsingData, protoFilePath, writeDirPath);
+    ExcelToPbTs_1.excelToPbTs(excelParsingData, projectSriptDir, protoDirPath, function () {
         console.log("excelpb 框架代码和数据生成完毕");
-        removeDir(protoDirPath);
+        CommonTool_1.removeDir(protoDirPath);
     });
 }
+exports.excelToPbFrame = excelToPbFrame;
 // excelToPbFrame(
 //     "F:/creatorProject/creatorPlugin_3_0_0_preview/excel",
 //     "F:/creatorProject/creatorPlugin_3_0_0_preview/assets",

@@ -1,33 +1,37 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PbConfigCreate = void 0;
 // 生成网络pbConfig信息
-import * as fs from "fs";
-import * as rd from "rd";
-import { createAndWriteFileSync } from "../common/CommonTool";
-class ProtoData {
-    constructor() {
+var fs = require("fs");
+var rd = require("rd");
+var CommonTool_1 = require("../common/CommonTool");
+var ProtoData = /** @class */ (function () {
+    function ProtoData() {
         this.content = "";
         this.isRes = true;
         this.packageName = "";
     }
-}
+    return ProtoData;
+}());
 function encodePbData(pbPaths) {
-    let pbDatas = [];
-    for (let i = 0; i < pbPaths.length; i++) {
-        let filePath = pbPaths[i];
+    var pbDatas = [];
+    for (var i = 0; i < pbPaths.length; i++) {
+        var filePath = pbPaths[i];
         if (fs.statSync(filePath).isDirectory()) {
             continue;
         }
-        let data = fs.readFileSync(filePath);
-        const packageName = data
+        var data = fs.readFileSync(filePath);
+        var packageName = data
             .toString()
             .match(/package [^=]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim();
-        let allMessageData = data.toString().match(/(message )\S+(\s{0,}{)/g);
-        for (let j = 0; j < allMessageData.length; j++) {
-            let pbData = new ProtoData();
-            let message = allMessageData[j];
-            let match = message.toString().match(/\S+(Res )/g);
+        var allMessageData = data.toString().match(/(message )\S+(\s{0,}{)/g);
+        for (var j = 0; j < allMessageData.length; j++) {
+            var pbData = new ProtoData();
+            var message = allMessageData[j];
+            var match = message.toString().match(/\S+(Res )/g);
             if (!match) {
                 match = message.toString().match(/\S+(Res{)/g);
             }
@@ -56,45 +60,45 @@ function encodePbData(pbPaths) {
     return pbDatas;
 }
 function getPbConfigContent(pbDatas) {
-    const tab1 = " ".repeat(4);
-    const tab2 = " ".repeat(8);
-    let content = `export abstract class PBConfig {\n`;
-    let packageNameSet = new Set();
-    pbDatas.forEach((pbData) => {
+    var tab1 = " ".repeat(4);
+    var tab2 = " ".repeat(8);
+    var content = "export abstract class PBConfig {\n";
+    var packageNameSet = new Set();
+    pbDatas.forEach(function (pbData) {
         packageNameSet.add(pbData.packageName);
         content +=
             tab1 +
-                `static readonly ` +
+                "static readonly " +
                 pbData.packageName +
                 pbData.content +
-                `: string = '` +
+                ": string = '" +
                 pbData.packageName +
-                `.` +
+                "." +
                 pbData.content +
-                `'\n`;
+                "'\n";
     });
-    content += tab1 + `static readonly Mapping = {\n`;
-    pbDatas.forEach((pbData) => {
-        let parser = pbData.packageName + `.` + pbData.content;
-        content += tab2 + `'` + parser + `':{ parser: ` + parser + `},\n`;
+    content += tab1 + "static readonly Mapping = {\n";
+    pbDatas.forEach(function (pbData) {
+        var parser = pbData.packageName + "." + pbData.content;
+        content += tab2 + "'" + parser + "':{ parser: " + parser + "},\n";
     });
-    content += tab1 + `}\n`;
-    content += `}\n`;
-    packageNameSet.forEach((value) => {
-        content = `import { ${value} } from './pb'\n` + content;
+    content += tab1 + "}\n";
+    content += "}\n";
+    packageNameSet.forEach(function (value) {
+        content = "import { " + value + " } from './pb'\n" + content;
     });
     return content;
 }
 // 创建网络消息res,req的define
-export function PbConfigCreate(pbDirPath, configTsPath) {
+function PbConfigCreate(pbDirPath, configTsPath) {
     if (fs.existsSync(pbDirPath)) {
-        let allProtoFile = rd.readSync(pbDirPath);
+        var allProtoFile = rd.readSync(pbDirPath);
         if (allProtoFile.length > 0) {
             console.log(allProtoFile);
-            let pbDatas = encodePbData(allProtoFile);
-            let content = getPbConfigContent(pbDatas);
+            var pbDatas = encodePbData(allProtoFile);
+            var content = getPbConfigContent(pbDatas);
             console.log(content);
-            createAndWriteFileSync(configTsPath, content);
+            CommonTool_1.createAndWriteFileSync(configTsPath, content);
         }
         else {
             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置");
@@ -104,4 +108,5 @@ export function PbConfigCreate(pbDirPath, configTsPath) {
         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置");
     }
 }
+exports.PbConfigCreate = PbConfigCreate;
 //# sourceMappingURL=PbConfigCreate.js.map

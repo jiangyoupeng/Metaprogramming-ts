@@ -1,31 +1,33 @@
-class PbBaseDataManagerInitFunc {
-    constructor() {
+var PbBaseDataManagerInitFunc = /** @class */ (function () {
+    function PbBaseDataManagerInitFunc() {
         this._init = false;
     }
     /**
      * 加载完成数据后的回调
      * @param overFunc
      */
-    init(overFunc) {
+    PbBaseDataManagerInitFunc.prototype.init = function (overFunc) {
+        var _this = this;
         if (!this._init) {
             this._init = true;
-            loader.loadRes("youProjectExcelRes", null, (err, data) => {
+            loader.loadRes("youProjectExcelRes", null, function (err, data) {
                 if (err) {
-                    this._init = false;
+                    _this._init = false;
                     console.error(err);
                 }
                 else {
-                    let bin = new Uint8Array(data._file);
-                    this._doInitData(bin);
+                    var bin = new Uint8Array(data._file);
+                    _this._doInitData(bin);
                 }
                 if (overFunc) {
-                    overFunc(err, this);
+                    overFunc(err, _this);
                 }
             });
         }
-    }
-    _doInitData(uIntPbData) {
+    };
+    PbBaseDataManagerInitFunc.prototype._doInitData = function (uIntPbData) {
         "replace you _doInitData imm";
-    }
-}
+    };
+    return PbBaseDataManagerInitFunc;
+}());
 //# sourceMappingURL=PbBaseDataManagerInitFunc.js.map
