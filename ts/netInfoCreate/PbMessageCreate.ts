@@ -135,7 +135,7 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
     })
 }
 
-createClientPbMessage(
-    "F:/creatorProject/creatorPlugin_3_0_0_preview/proto",
-    "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net"
-)
+// createClientPbMessage(
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/proto",
+//     "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/game/net"
+// )
