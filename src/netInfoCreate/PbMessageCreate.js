@@ -126,6 +126,14 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
     CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
     CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+        // 仅在客户端使用的时候需要替换
+        if (matchStr == "Res") {
+            // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
+            var data = fs.readFileSync(pbCreateDirPath + "/" + packageName + ".js");
+            var content = data.toString();
+            content = content.replace("import * as $protobuf from \"protobufjs/minimal\"", "const $protobuf = protobuf");
+            CommonTool_1.createAndWriteFileSync(pbCreateDirPath + "/" + packageName + ".js", content);
+        }
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
         if (callback) {
             callback();

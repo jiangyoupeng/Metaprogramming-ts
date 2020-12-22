@@ -169,7 +169,12 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
     CommonTool_1.createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent);
     CommonTool_1.createAndWriteFileSync(baseDataPath);
     CreatePBTs_1.createPbts(baseDataPath, protoDirPath, "excelPb", function () {
-        console.log("生成ts文件内容完成");
+        // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
+        var data = fs.readFileSync(baseDataPath + "/excelPb.js");
+        var content = data.toString();
+        content = content.replace("import * as $protobuf from \"protobufjs/minimal\"", "const $protobuf = protobuf");
+        CommonTool_1.createAndWriteFileSync(baseDataPath + "/excelPb.js", content);
+        console.log("替换excelPb内容成功");
         if (overCall) {
             overCall();
         }
