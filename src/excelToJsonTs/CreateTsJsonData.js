@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTsJsonData = exports.doCreateTsJsonData = void 0;
-var CommonTool_1 = require("../common/CommonTool");
-var ExcelParsingData_1 = require("../common/ExcelParsingData");
-var JypFrameDefine_1 = require("../common/JypFrameDefine");
+import { createAndWriteFileSync, removeDir } from "../common/CommonTool";
+import { convertExcelTypeToTsType, ExcelParsingData } from "../common/ExcelParsingData";
+import { JypFrameDefine } from "../common/JypFrameDefine";
 var excelDataName = "excelData.json";
-function doCreateTsJsonData(excelParsingData, projectResource) {
+export function doCreateTsJsonData(excelParsingData, projectResource) {
     // 只支持唯一主键
     var settingJsonData = {};
     var tableDatas = excelParsingData.excelTableMap;
@@ -28,7 +25,7 @@ function doCreateTsJsonData(excelParsingData, projectResource) {
             var valueData = [];
             oneLineData.forEach(function (oneData, name) {
                 var type = tableData.typeMap.get(name);
-                var factType = ExcelParsingData_1.convertExcelTypeToTsType(type);
+                var factType = convertExcelTypeToTsType(type);
                 if (oneData !== undefined && oneData !== null) {
                     if (type.indexOf("[]") !== -1) {
                         var newValue = oneData;
@@ -87,17 +84,15 @@ function doCreateTsJsonData(excelParsingData, projectResource) {
         tableJsonData.values = values;
         tableJsonData.foreign = foreign;
     });
-    var writeDirPath = projectResource + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName;
-    var writePath = writeDirPath + "/" + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + ".json";
-    CommonTool_1.removeDir(writeDirPath);
-    CommonTool_1.createAndWriteFileSync(writePath, JSON.stringify(settingJsonData, null, 4));
+    var writeDirPath = projectResource + JypFrameDefine.frameCodeCreateExcelDataResName;
+    var writePath = writeDirPath + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".json";
+    removeDir(writeDirPath);
+    createAndWriteFileSync(writePath, JSON.stringify(settingJsonData, null, 4));
     console.log("excel转换json数据完成");
 }
-exports.doCreateTsJsonData = doCreateTsJsonData;
-function createTsJsonData(excelDirPath, projectResource) {
-    var excelParsingData = new ExcelParsingData_1.ExcelParsingData(excelDirPath, true);
+export function createTsJsonData(excelDirPath, projectResource) {
+    var excelParsingData = new ExcelParsingData(excelDirPath, true);
     doCreateTsJsonData(excelParsingData, projectResource);
 }
-exports.createTsJsonData = createTsJsonData;
 // createTsJsonData("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/resources/")
 //# sourceMappingURL=CreateTsJsonData.js.map

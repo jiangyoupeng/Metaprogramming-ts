@@ -1,17 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.excelToProtoFile = exports.doExcelToProtoFile = void 0;
-var CommonTool_1 = require("../common/CommonTool");
-var ExcelParsingData_1 = require("../common/ExcelParsingData");
-var JypFrameDefine_1 = require("../common/JypFrameDefine");
+import { createAndWriteFileSync } from "../common/CommonTool";
+import { convertExcelTypeToPbType, ExcelParsingData } from "../common/ExcelParsingData";
+import { JypFrameDefine } from "../common/JypFrameDefine";
 var pbBeginContet = "syntax = \"proto3\";\npackage excelPb;\n";
-function doExcelToProtoFile(excelParsingData, protoDirPath, protoName) {
+export function doExcelToProtoFile(excelParsingData, protoDirPath, protoName) {
     protoName = protoName || "tmpProto";
     var excelPbContent = pbBeginContet;
     var totalTableContent = "message TotalExcelPbDatas{\n";
     var totalIndex = 1;
-    var messagePbTableName = JypFrameDefine_1.JypFrameDefine.messagePbTableNameBegin;
-    var messagePbDateName = JypFrameDefine_1.JypFrameDefine.messagePbDateNameBegin;
+    var messagePbTableName = JypFrameDefine.messagePbTableNameBegin;
+    var messagePbDateName = JypFrameDefine.messagePbDateNameBegin;
     excelParsingData.excelTableMap.forEach(function (tableData, key) {
         var tableName = key.charAt(0).toUpperCase() + key.slice(1);
         var index = 1;
@@ -22,7 +19,7 @@ function doExcelToProtoFile(excelParsingData, protoDirPath, protoName) {
                 messageContent += "    // " + tips + "\n";
             }
             var type = tableData.typeMap.get(name);
-            var pbType = ExcelParsingData_1.convertExcelTypeToPbType(type);
+            var pbType = convertExcelTypeToPbType(type);
             if (pbType.indexOf("[]") !== -1) {
                 pbType = pbType.substr(0, pbType.indexOf("[]"));
                 messageContent = messageContent + "    repeated " + pbType + " " + name + " = " + index++ + " [packed=true];\n";
@@ -46,15 +43,13 @@ function doExcelToProtoFile(excelParsingData, protoDirPath, protoName) {
     });
     totalTableContent += "}\n";
     var pbFilePath = protoDirPath + "/" + protoName + ".proto";
-    CommonTool_1.createAndWriteFileSync(protoDirPath);
-    CommonTool_1.createAndWriteFileSync(pbFilePath, excelPbContent + totalTableContent);
+    createAndWriteFileSync(protoDirPath);
+    createAndWriteFileSync(pbFilePath, excelPbContent + totalTableContent);
 }
-exports.doExcelToProtoFile = doExcelToProtoFile;
-function excelToProtoFile(excelDirPath, protoDirPath) {
-    var excelParsingData = new ExcelParsingData_1.ExcelParsingData(excelDirPath, true);
+export function excelToProtoFile(excelDirPath, protoDirPath) {
+    var excelParsingData = new ExcelParsingData(excelDirPath, true);
     doExcelToProtoFile(excelParsingData, protoDirPath);
 }
-exports.excelToProtoFile = excelToProtoFile;
 // let protoDirPath: string = __dirname.substring(0, __dirname.lastIndexOf("package-lib")) + "/package-lib/ts/excelToPbTs/tmpProto"
 // excelToProtoFile("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", protoDirPath)
 //# sourceMappingURL=ExcelToProtoFile.js.map

@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PbConfigCreate = void 0;
 // 生成网络pbConfig信息
-var fs = require("fs");
-var rd = require("rd");
-var CommonTool_1 = require("../common/CommonTool");
+import * as fs from "fs";
+import * as rd from "rd";
+import { createAndWriteFileSync } from "../common/CommonTool";
 var ProtoData = /** @class */ (function () {
     function ProtoData() {
         this.content = "";
@@ -90,7 +87,7 @@ function getPbConfigContent(pbDatas) {
     return content;
 }
 // 创建网络消息res,req的define
-function PbConfigCreate(pbDirPath, configTsPath) {
+export function PbConfigCreate(pbDirPath, configTsPath) {
     if (fs.existsSync(pbDirPath)) {
         var allProtoFile = rd.readSync(pbDirPath);
         if (allProtoFile.length > 0) {
@@ -98,7 +95,7 @@ function PbConfigCreate(pbDirPath, configTsPath) {
             var pbDatas = encodePbData(allProtoFile);
             var content = getPbConfigContent(pbDatas);
             console.log(content);
-            CommonTool_1.createAndWriteFileSync(configTsPath, content);
+            createAndWriteFileSync(configTsPath, content);
         }
         else {
             console.warn("当前路径: " + pbDirPath + " 找不到pb文件,请将pb存放到项目指定位置");
@@ -108,5 +105,4 @@ function PbConfigCreate(pbDirPath, configTsPath) {
         console.warn("当前路径: " + pbDirPath + " 不存在文件夹,请将pb存放到项目指定位置");
     }
 }
-exports.PbConfigCreate = PbConfigCreate;
 //# sourceMappingURL=PbConfigCreate.js.map

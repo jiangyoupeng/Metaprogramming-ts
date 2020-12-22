@@ -1,26 +1,23 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.excelToPbTs = void 0;
-var fs = require("fs");
-var CommonTool_1 = require("../common/CommonTool");
-var CreatePBTs_1 = require("../common/CreatePBTs");
-var ExcelParsingData_1 = require("../common/ExcelParsingData");
-var JypFrameDefine_1 = require("../common/JypFrameDefine");
+import * as fs from "fs";
+import { createAndWriteFileSync, removeDir } from "../common/CommonTool";
+import { createPbts } from "../common/CreatePBTs";
+import { convertExcelTypeToTsType } from "../common/ExcelParsingData";
+import { JypFrameDefine } from "../common/JypFrameDefine";
 var initFuncPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/PbBaseDataManagerInitFunc.ts";
 var BaseDataManagerClassName = "BaseDataManager";
 var ExcelDataModelsClassName = "ExcelDataModels";
 var ExcelDataManagerClassName = "ExcelDataManager";
 var excelToPbPath = "/excelToTs";
-function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall) {
+export function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall) {
     var dataPath = projectScriptPath +
         "/" +
-        JypFrameDefine_1.JypFrameDefine.frameScriptBaseDirName +
+        JypFrameDefine.frameScriptBaseDirName +
         "/" +
         excelToPbPath +
         "/" +
-        JypFrameDefine_1.JypFrameDefine.frameOverWriteName +
+        JypFrameDefine.frameOverWriteName +
         "/";
-    var baseDataPath = projectScriptPath + "/" + JypFrameDefine_1.JypFrameDefine.frameScriptBaseDirName + "/" + excelToPbPath + "/" + JypFrameDefine_1.JypFrameDefine.frameReadonlyName + "/";
+    var baseDataPath = projectScriptPath + "/" + JypFrameDefine.frameScriptBaseDirName + "/" + excelToPbPath + "/" + JypFrameDefine.frameReadonlyName + "/";
     var excelDataModelPath = baseDataPath + ExcelDataModelsClassName + ".ts";
     var pbBaseDataManager = baseDataPath + BaseDataManagerClassName + ".ts";
     var oneTable = " ".repeat(4);
@@ -41,14 +38,14 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
             }
         }
     }
-    CommonTool_1.removeDir(baseDataPath);
-    var messagePbTableName = JypFrameDefine_1.JypFrameDefine.messagePbTableNameBegin;
-    var messagePbDateName = JypFrameDefine_1.JypFrameDefine.messagePbDateNameBegin;
-    var noModifyTips = JypFrameDefine_1.JypFrameDefine.noModifyTips;
-    var canModifyTips = JypFrameDefine_1.JypFrameDefine.canModifyTips;
+    removeDir(baseDataPath);
+    var messagePbTableName = JypFrameDefine.messagePbTableNameBegin;
+    var messagePbDateName = JypFrameDefine.messagePbDateNameBegin;
+    var noModifyTips = JypFrameDefine.noModifyTips;
+    var canModifyTips = JypFrameDefine.canModifyTips;
     var initFuncContent = fs.readFileSync(initFuncPath).toString();
     initFuncContent = initFuncContent.substring(initFuncContent.indexOf("    private _init: boolean = false"));
-    initFuncContent = initFuncContent.replace("youProjectExcelRes", JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + "/" + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + ".bin");
+    initFuncContent = initFuncContent.replace("youProjectExcelRes", JypFrameDefine.frameCodeCreateExcelDataResName + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".bin");
     var _doInitConent = "let data: excelPb.TotalExcelPbDatas = excelPb.TotalExcelPbDatas.decode(uIntPbData)\n";
     var pbBaseDataManagerContent = "import { loader } from \"cc\"\n";
     pbBaseDataManagerContent += "export class BaseDataManager {\n";
@@ -75,7 +72,7 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
                 attritubeStr = attritubeStr + "    */\n";
             }
             var type = tableData.typeMap.get(name);
-            var tsType = ExcelParsingData_1.convertExcelTypeToTsType(type);
+            var tsType = convertExcelTypeToTsType(type);
             var foreignMap = tableData.foreignMap.get(name);
             if (foreignMap) {
                 var tableKey = foreignMap.foreignTableName;
@@ -126,7 +123,7 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
             "import { " +
                 logicClassName +
                 " } from '../" +
-                JypFrameDefine_1.JypFrameDefine.frameOverWriteName +
+                JypFrameDefine.frameOverWriteName +
                 "/" +
                 logicClassName +
                 "'\n" +
@@ -137,12 +134,12 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
                 "import { " +
                 className +
                 " } from '../" +
-                JypFrameDefine_1.JypFrameDefine.frameReadonlyName +
+                JypFrameDefine.frameReadonlyName +
                 "/" +
                 ExcelDataModelsClassName +
                 "'\n";
             logicFileStr = logicFileStr + "export class " + logicClassName + " extends " + className + " {\n}";
-            CommonTool_1.createAndWriteFileSync(logicFilePath, logicFileStr);
+            createAndWriteFileSync(logicFilePath, logicFileStr);
         }
         if (alreadyCreateLogicFile[logicClassName]) {
             alreadyCreateLogicFile[logicClassName] = false;
@@ -162,24 +159,23 @@ function excelToPbTs(excelParsingData, projectScriptPath, protoDirPath, overCall
     pbBaseDataManagerContent += initFuncContent;
     pbBaseDataManagerContent = "import { excelPb } from \"./excelPb\"\n" + pbBaseDataManagerContent;
     // console.log(content)
-    CommonTool_1.createAndWriteFileSync(excelDataModelPath, noModifyTips + content);
-    CommonTool_1.createAndWriteFileSync(pbBaseDataManager, noModifyTips + pbBaseDataManagerContent);
+    createAndWriteFileSync(excelDataModelPath, noModifyTips + content);
+    createAndWriteFileSync(pbBaseDataManager, noModifyTips + pbBaseDataManagerContent);
     var pbExcelDataContent = canModifyTips +
         ("import { " + BaseDataManagerClassName + " } from '../readonly/" + BaseDataManagerClassName + "'\nexport class ExcelDataManager extends " + BaseDataManagerClassName + " {}");
-    CommonTool_1.createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent);
-    CommonTool_1.createAndWriteFileSync(baseDataPath);
-    CreatePBTs_1.createPbts(baseDataPath, protoDirPath, "excelPb", function () {
+    createAndWriteFileSync(dataPath + ExcelDataManagerClassName + ".ts", pbExcelDataContent);
+    createAndWriteFileSync(baseDataPath);
+    createPbts(baseDataPath, protoDirPath, "excelPb", function () {
         // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
         var data = fs.readFileSync(baseDataPath + "/excelPb.js");
         var content = data.toString();
         content = content.replace("import * as $protobuf from \"protobufjs/minimal\"", "const $protobuf = protobuf");
-        CommonTool_1.createAndWriteFileSync(baseDataPath + "/excelPb.js", content);
+        createAndWriteFileSync(baseDataPath + "/excelPb.js", content);
         console.log("替换excelPb内容成功");
         if (overCall) {
             overCall();
         }
     });
 }
-exports.excelToPbTs = excelToPbTs;
 // excelToPbTs("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")
 //# sourceMappingURL=ExcelToPbTs.js.map

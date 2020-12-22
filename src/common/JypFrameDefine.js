@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JypFrameDefine = void 0;
 var JypFrameDefine = /** @class */ (function () {
     function JypFrameDefine() {
     }
@@ -14,5 +11,5 @@ var JypFrameDefine = /** @class */ (function () {
     JypFrameDefine.messagePbDateNameBegin = "pbReadonly";
     return JypFrameDefine;
 }());
-exports.JypFrameDefine = JypFrameDefine;
+export { JypFrameDefine };
 //# sourceMappingURL=JypFrameDefine.js.map

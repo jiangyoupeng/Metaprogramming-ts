@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExcelParsingData = exports.convertExcelTypeToPbType = exports.convertExcelTypeToTsType = void 0;
-var fs = require("fs");
-var xlsx = require("xlsx");
+import * as fs from "fs";
+import * as xlsx from "xlsx";
 // int 默认为int32,如果要声明为int64需要特殊写明
 var supportTypeDefine = new Set(["int", "int64", "float", "double", "bool", "string"]);
 var excelTypeToTsTypeDefine = new Map([
@@ -24,7 +21,7 @@ var excelTypeToPbTypeDefine = new Map([
 var excelKeyBeginDefine = "__EMPTY";
 var primaryKeyDefine = "PRIMARY";
 var foreignKeyDefine = "FOREIGN:";
-function convertExcelTypeToTsType(type) {
+export function convertExcelTypeToTsType(type) {
     var tsType;
     if (supportTypeDefine.has(type)) {
         tsType = excelTypeToTsTypeDefine.get(type);
@@ -44,8 +41,7 @@ function convertExcelTypeToTsType(type) {
     }
     return tsType;
 }
-exports.convertExcelTypeToTsType = convertExcelTypeToTsType;
-function convertExcelTypeToPbType(type) {
+export function convertExcelTypeToPbType(type) {
     var tsType;
     if (supportTypeDefine.has(type)) {
         tsType = excelTypeToPbTypeDefine.get(type);
@@ -65,7 +61,6 @@ function convertExcelTypeToPbType(type) {
     }
     return tsType;
 }
-exports.convertExcelTypeToPbType = convertExcelTypeToPbType;
 var ForegignData = /** @class */ (function () {
     function ForegignData(foreignTableName, foreignKeyName) {
         this.foreignTableName = foreignTableName;
@@ -205,5 +200,5 @@ var ExcelParsingData = /** @class */ (function () {
     }
     return ExcelParsingData;
 }());
-exports.ExcelParsingData = ExcelParsingData;
+export { ExcelParsingData };
 //# sourceMappingURL=ExcelParsingData.js.map

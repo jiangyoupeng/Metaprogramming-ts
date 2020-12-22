@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeDir = exports.createAndWriteFileSync = void 0;
-var fs = require("fs");
-var path = require("path");
-function createAndWriteFileSync(filePath, content) {
+import * as fs from "fs";
+import * as path from "path";
+export function createAndWriteFileSync(filePath, content) {
     var arr = filePath.split(path.sep);
     var dir = arr[0];
     for (var i = 1; i < arr.length; i++) {
@@ -22,8 +19,7 @@ function createAndWriteFileSync(filePath, content) {
     }
     console.log("写入文件/文件夹 " + filePath + " 成功");
 }
-exports.createAndWriteFileSync = createAndWriteFileSync;
-function removeDir(dir) {
+export function removeDir(dir) {
     if (fs.existsSync(dir)) {
         var files = fs.readdirSync(dir);
         for (var i = 0; i < files.length; i++) {
@@ -42,5 +38,4 @@ function removeDir(dir) {
         console.log("删除文件夹 " + dir);
     }
 }
-exports.removeDir = removeDir;
 //# sourceMappingURL=CommonTool.js.map

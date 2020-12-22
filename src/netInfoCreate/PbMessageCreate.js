@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createServerPbMessage = exports.createClientPbMessage = void 0;
 // 生成网络pbMessage及引用
 // 生成网络pbConfig信息
-var fs = require("fs");
-var rd = require("rd");
-var path = require("path");
-var CommonTool_1 = require("../common/CommonTool");
-var CreatePBTs_1 = require("../common/CreatePBTs");
+import * as fs from "fs";
+import * as rd from "rd";
+import * as path from "path";
+import { createAndWriteFileSync } from "../common/CommonTool";
+import { createPbts } from "../common/CreatePBTs";
 var ProtoData = /** @class */ (function () {
     function ProtoData() {
         this.content = "";
@@ -68,14 +65,12 @@ function encodePbData(pbPaths) {
     }
     return pbDatas;
 }
-function createClientPbMessage(pbDirPath, pbCreateDirPath, callback) {
+export function createClientPbMessage(pbDirPath, pbCreateDirPath, callback) {
     _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Res", callback);
 }
-exports.createClientPbMessage = createClientPbMessage;
-function createServerPbMessage(pbDirPath, pbCreateDirPath, callback) {
+export function createServerPbMessage(pbDirPath, pbCreateDirPath, callback) {
     _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req", callback);
 }
-exports.createServerPbMessage = createServerPbMessage;
 function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     var protoFiles = rd.readSync(pbDirPath);
     var pbDatas = encodePbData(protoFiles);
@@ -99,7 +94,7 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
             exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";
             var filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
             if (!fs.existsSync(filePath)) {
-                CommonTool_1.createAndWriteFileSync(filePath, exportStr);
+                createAndWriteFileSync(filePath, exportStr);
             }
             if (fileAllFileMap.has(filePath)) {
                 fileAllFileMap.delete(filePath);
@@ -123,16 +118,16 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
             console.warn("不存在pb数据内的文件:" + value);
         }
     });
-    CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
-    CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
-    CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+    createAndWriteFileSync(refPath, netMsgRef);
+    createAndWriteFileSync(pbRefPath, netPbClassRef);
+    createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
         // 仅在客户端使用的时候需要替换
         if (matchStr == "Res") {
             // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
             var data = fs.readFileSync(pbCreateDirPath + "/" + packageName + ".js");
             var content = data.toString();
             content = content.replace("import * as $protobuf from \"protobufjs/minimal\"", "const $protobuf = protobuf");
-            CommonTool_1.createAndWriteFileSync(pbCreateDirPath + "/" + packageName + ".js", content);
+            createAndWriteFileSync(pbCreateDirPath + "/" + packageName + ".js", content);
         }
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
         if (callback) {

@@ -1,24 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.excelToPbData = void 0;
 // import { ExcelParsingData } from "../common/ExcelParsingData"
-var protobufjs_1 = require("protobufjs");
-var CommonTool_1 = require("../common/CommonTool");
-var ExcelParsingData_1 = require("../common/ExcelParsingData");
-var JypFrameDefine_1 = require("../common/JypFrameDefine");
-function excelToPbData(excelParsingData, protoFile, pbDataDirPath) {
-    var root = protobufjs_1.loadSync(protoFile);
+import { loadSync } from "protobufjs";
+import { createAndWriteFileSync, removeDir } from "../common/CommonTool";
+import { convertExcelTypeToTsType } from "../common/ExcelParsingData";
+import { JypFrameDefine } from "../common/JypFrameDefine";
+export function excelToPbData(excelParsingData, protoFile, pbDataDirPath) {
+    var root = loadSync(protoFile);
     var TotalExcelPbDatas = root.lookupType("excelPb.TotalExcelPbDatas");
     var totalDatas = {};
     excelParsingData.excelTableMap.forEach(function (tableData, key) {
         var fileName = key.charAt(0).toUpperCase() + key.slice(1);
-        var TableClass = root.lookupType("excelPb." + JypFrameDefine_1.JypFrameDefine.messagePbTableNameBegin + fileName);
+        var TableClass = root.lookupType("excelPb." + JypFrameDefine.messagePbTableNameBegin + fileName);
         var tableArrDatas = [];
         tableData.dataArr.forEach(function (oneLineData) {
             var infoData = {};
             oneLineData.forEach(function (oneData, name) {
                 var type = tableData.typeMap.get(name);
-                var factType = ExcelParsingData_1.convertExcelTypeToTsType(type);
+                var factType = convertExcelTypeToTsType(type);
                 if (oneData !== undefined && oneData !== null) {
                     if (type.indexOf("[]") !== -1) {
                         var newValue = oneData;
@@ -63,12 +60,11 @@ function excelToPbData(excelParsingData, protoFile, pbDataDirPath) {
             });
             tableArrDatas.push(infoData);
         });
-        totalDatas["" + JypFrameDefine_1.JypFrameDefine.messagePbDateNameBegin + fileName] = tableArrDatas;
+        totalDatas["" + JypFrameDefine.messagePbDateNameBegin + fileName] = tableArrDatas;
     });
     var encodeData = TotalExcelPbDatas.encode(TotalExcelPbDatas.create(totalDatas)).finish();
-    CommonTool_1.removeDir(pbDataDirPath);
-    var writePath = pbDataDirPath + "/" + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + ".bin";
-    CommonTool_1.createAndWriteFileSync(writePath, encodeData);
+    removeDir(pbDataDirPath);
+    var writePath = pbDataDirPath + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".bin";
+    createAndWriteFileSync(writePath, encodeData);
 }
-exports.excelToPbData = excelToPbData;
 //# sourceMappingURL=ExcelToPbData.js.map

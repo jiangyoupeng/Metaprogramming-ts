@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.printStep = exports.formatConsole = exports.styles = void 0;
-exports.styles = {
+export var styles = {
     bold: ["\x1B[1m", "\x1B[22m"],
     italic: ["\x1B[3m", "\x1B[23m"],
     underline: ["\x1B[4m", "\x1B[24m"],
@@ -26,18 +23,16 @@ exports.styles = {
     redBG: ["\x1B[41m", "\x1B[49m"],
     yellowBG: ["\x1B[43m", "\x1B[49m"],
 };
-function formatConsole(contents, color, style, colorBG) {
-    var colorHead = color === undefined ? "" : exports.styles[color][0];
-    var colorTail = color === undefined ? "" : exports.styles[color][1];
-    var colorBGHead = colorBG === undefined ? "" : exports.styles[colorBG][0];
-    var colorBGTail = colorBG === undefined ? "" : exports.styles[colorBG][1];
-    var styleHead = style === undefined ? "" : exports.styles[style][0];
-    var styleTail = style === undefined ? "" : exports.styles[style][1];
+export function formatConsole(contents, color, style, colorBG) {
+    var colorHead = color === undefined ? "" : styles[color][0];
+    var colorTail = color === undefined ? "" : styles[color][1];
+    var colorBGHead = colorBG === undefined ? "" : styles[colorBG][0];
+    var colorBGTail = colorBG === undefined ? "" : styles[colorBG][1];
+    var styleHead = style === undefined ? "" : styles[style][0];
+    var styleTail = style === undefined ? "" : styles[style][1];
     return styleHead + colorHead + colorBGHead + contents.join(" ") + colorBGTail + colorTail + styleTail;
 }
-exports.formatConsole = formatConsole;
-function printStep(step, desc) {
+export function printStep(step, desc) {
     console.log(formatConsole([step + "." + desc], "grey"));
 }
-exports.printStep = printStep;
 //# sourceMappingURL=ConsoleUtils.js.map

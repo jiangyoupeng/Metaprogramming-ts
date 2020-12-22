@@ -1,30 +1,27 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTsJsonScript = exports.doCreateTsJsonScript = void 0;
-var fs = require("fs");
-var CommonTool_1 = require("../common/CommonTool");
-var ExcelParsingData_1 = require("../common/ExcelParsingData");
-var JypFrameDefine_1 = require("../common/JypFrameDefine");
+import * as fs from "fs";
+import { createAndWriteFileSync, removeDir } from "../common/CommonTool";
+import { convertExcelTypeToTsType, ExcelParsingData } from "../common/ExcelParsingData";
+import { JypFrameDefine } from "../common/JypFrameDefine";
 var excelToTsPath = "/excelToTs";
 var initFuncPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToJsonTs/BaseDataManagerInitFunc.ts";
 var RefrenceClassName = "Refrence";
 var BaseDataManagerClassName = "BaseDataManager";
 var ExcelDataModelsClassName = "ExcelDataModels";
 var ExcelDataManagerClassName = "ExcelDataManager";
-function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
+export function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
     var dataPath = projectScriptPath +
         "/" +
-        JypFrameDefine_1.JypFrameDefine.frameScriptBaseDirName +
+        JypFrameDefine.frameScriptBaseDirName +
         "/" +
         excelToTsPath +
         "/" +
-        JypFrameDefine_1.JypFrameDefine.frameOverWriteName +
+        JypFrameDefine.frameOverWriteName +
         "/";
-    var baseDataPath = projectScriptPath + "/" + JypFrameDefine_1.JypFrameDefine.frameScriptBaseDirName + "/" + excelToTsPath + "/" + JypFrameDefine_1.JypFrameDefine.frameReadonlyName + "/";
+    var baseDataPath = projectScriptPath + "/" + JypFrameDefine.frameScriptBaseDirName + "/" + excelToTsPath + "/" + JypFrameDefine.frameReadonlyName + "/";
     var excelDataModelPath = baseDataPath + ExcelDataModelsClassName + ".ts";
-    CommonTool_1.removeDir(baseDataPath);
-    var noModifyTips = JypFrameDefine_1.JypFrameDefine.noModifyTips;
-    var canModifyTips = JypFrameDefine_1.JypFrameDefine.canModifyTips;
+    removeDir(baseDataPath);
+    var noModifyTips = JypFrameDefine.noModifyTips;
+    var canModifyTips = JypFrameDefine.canModifyTips;
     // 第 1行是描述,第二行说明服务器还是客户端使用
     // 第3行开始有用 说明类型
     // 第4行说明字段名
@@ -64,7 +61,7 @@ function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
                 attritubeStr = attritubeStr + "    */\n";
             }
             var type = tableData.typeMap.get(name);
-            var tsType = ExcelParsingData_1.convertExcelTypeToTsType(type);
+            var tsType = convertExcelTypeToTsType(type);
             var foreignMap = tableData.foreignMap.get(name);
             if (foreignMap) {
                 var tableKey = foreignMap.foreignTableName;
@@ -92,7 +89,7 @@ function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
             "import { " +
                 logicClassName +
                 " } from '../" +
-                JypFrameDefine_1.JypFrameDefine.frameOverWriteName +
+                JypFrameDefine.frameOverWriteName +
                 "/" +
                 logicClassName +
                 "'\n" +
@@ -106,12 +103,12 @@ function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
                 "import { " +
                 className +
                 " } from '../" +
-                JypFrameDefine_1.JypFrameDefine.frameReadonlyName +
+                JypFrameDefine.frameReadonlyName +
                 "/" +
                 ExcelDataModelsClassName +
                 "'\n";
             logicFileStr = logicFileStr + "export class " + logicClassName + " extends " + className + " {\n}";
-            CommonTool_1.createAndWriteFileSync(logicFilePath, logicFileStr);
+            createAndWriteFileSync(logicFilePath, logicFileStr);
         }
         if (alreadyCreateLogicFile[logicClassName]) {
             alreadyCreateLogicFile[logicClassName] = false;
@@ -127,17 +124,17 @@ function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
     settingDataModelContetnt = "import { loader, JsonAsset } from \"cc\"\n" + settingDataModelContetnt;
     var data = fs.readFileSync(initFuncPath).toString();
     data = data.substring(data.indexOf("    private _init: boolean = false"));
-    data = data.replace("youProjectExcelRes", JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + "/" + JypFrameDefine_1.JypFrameDefine.frameCodeCreateExcelDataResName + ".json");
+    data = data.replace("youProjectExcelRes", JypFrameDefine.frameCodeCreateExcelDataResName + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".json");
     settingDataModelContetnt += data;
-    CommonTool_1.createAndWriteFileSync(baseDataPath + RefrenceClassName + ".ts", noModifyTips + refrenceFileStr + refrenceContentStr);
-    CommonTool_1.createAndWriteFileSync(baseDataPath + BaseDataManagerClassName + ".ts", noModifyTips + refrenceFileStr + settingDataModelContetnt);
+    createAndWriteFileSync(baseDataPath + RefrenceClassName + ".ts", noModifyTips + refrenceFileStr + refrenceContentStr);
+    createAndWriteFileSync(baseDataPath + BaseDataManagerClassName + ".ts", noModifyTips + refrenceFileStr + settingDataModelContetnt);
     var settingPath = dataPath + ExcelDataManagerClassName + ".ts";
     if (!fs.existsSync(settingPath)) {
         var settingDataStr = canModifyTips +
             "import { " +
             BaseDataManagerClassName +
             " } from '../" +
-            JypFrameDefine_1.JypFrameDefine.frameReadonlyName +
+            JypFrameDefine.frameReadonlyName +
             "/" +
             BaseDataManagerClassName +
             "'\n" +
@@ -147,16 +144,14 @@ function doCreateTsJsonScript(excelParsingData, projectScriptPath) {
             BaseDataManagerClassName +
             " {\n" +
             "}\n";
-        CommonTool_1.createAndWriteFileSync(settingPath, settingDataStr);
+        createAndWriteFileSync(settingPath, settingDataStr);
     }
-    CommonTool_1.createAndWriteFileSync(excelDataModelPath, noModifyTips + totalBaseSettingModelStr);
+    createAndWriteFileSync(excelDataModelPath, noModifyTips + totalBaseSettingModelStr);
     console.log("脚本代码自动生成完毕");
 }
-exports.doCreateTsJsonScript = doCreateTsJsonScript;
-function createTsJsonScript(excelDirPath, projectScriptPath) {
-    var excelParsingData = new ExcelParsingData_1.ExcelParsingData(excelDirPath, true);
+export function createTsJsonScript(excelDirPath, projectScriptPath) {
+    var excelParsingData = new ExcelParsingData(excelDirPath, true);
     doCreateTsJsonScript(excelParsingData, projectScriptPath);
 }
-exports.createTsJsonScript = createTsJsonScript;
 // createTsJsonScript("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets")
 //# sourceMappingURL=CreateTsJsonScript.js.map
