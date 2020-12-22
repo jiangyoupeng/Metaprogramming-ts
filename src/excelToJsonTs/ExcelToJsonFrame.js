@@ -3,7 +3,7 @@ import { doCreateTsJsonData } from "./CreateTsJsonData";
 import { doCreateTsJsonScript } from "./CreateTsJsonScript";
 export function excelToJsonFrame(excelDirPath, projectSriptDir, projectResDir) {
     console.log("当前启用数据框架: jsonTs");
-    var excelParsingData = new ExcelParsingData(excelDirPath, true);
+    let excelParsingData = new ExcelParsingData(excelDirPath, true);
     doCreateTsJsonData(excelParsingData, projectResDir);
     doCreateTsJsonScript(excelParsingData, projectSriptDir);
 }

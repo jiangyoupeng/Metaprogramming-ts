@@ -1,14 +1,10 @@
 import { spawn } from "child_process";
 import { formatConsole } from "./ConsoleUtils";
-var _cmds = [];
-var _running = false;
-export function cmd() {
-    var cmds = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        cmds[_i] = arguments[_i];
-    }
+const _cmds = [];
+let _running = false;
+export function cmd(...cmds) {
     // const process: ChildProcess = spawn()
-    cmds.map(function (cmd) {
+    cmds.map((cmd) => {
         if (typeof cmd === "function") {
             _cmds.push(cmd);
         }
@@ -21,12 +17,8 @@ export function cmd() {
         nextCmd(false);
     }
 }
-export function cmdSilence() {
-    var cmds = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        cmds[_i] = arguments[_i];
-    }
-    cmds.map(function (cmd) {
+export function cmdSilence(...cmds) {
+    cmds.map((cmd) => {
         if (typeof cmd === "function") {
             _cmds.push(cmd);
         }
@@ -41,21 +33,21 @@ export function cmdSilence() {
 }
 function nextCmd(silence) {
     var _a;
-    var cmd = _cmds.shift();
+    const cmd = _cmds.shift();
     if (typeof cmd === "function") {
         cmd();
         nextCmd(silence);
     }
     else if (cmd) {
         console.log(formatConsole([cmd], "grey"));
-        var args = cmd.split(" ");
-        var command = (process.platform === "win32" ? (_a = args === null || args === void 0 ? void 0 : args.shift()) === null || _a === void 0 ? void 0 : _a.replace("npm", "npm.cmd") : args.shift());
-        var childProcess = spawn(command, args, { stdio: "inherit" });
-        childProcess.on("error", function (err) {
+        const args = cmd.split(" ");
+        const command = (process.platform === "win32" ? (_a = args === null || args === void 0 ? void 0 : args.shift()) === null || _a === void 0 ? void 0 : _a.replace("npm", "npm.cmd") : args.shift());
+        const childProcess = spawn(command, args, { stdio: "inherit" });
+        childProcess.on("error", (err) => {
             console.log("cmd error:", JSON.stringify(err));
             nextCmd(silence);
         });
-        childProcess.on("exit", function (code, signal) {
+        childProcess.on("exit", (code, signal) => {
             if (code !== 0 || signal != null) {
                 console.log("exit code:", code, signal);
             }

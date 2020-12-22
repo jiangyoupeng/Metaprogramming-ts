@@ -1,52 +1,52 @@
 import { createAndWriteFileSync, removeDir } from "../common/CommonTool";
 import { convertExcelTypeToTsType, ExcelParsingData } from "../common/ExcelParsingData";
 import { JypFrameDefine } from "../common/JypFrameDefine";
-var excelDataName = "excelData.json";
+let excelDataName = "excelData.json";
 export function doCreateTsJsonData(excelParsingData, projectResource) {
     // 只支持唯一主键
-    var settingJsonData = {};
-    var tableDatas = excelParsingData.excelTableMap;
-    tableDatas.forEach(function (tableData, key) {
-        var fileName = key.charAt(0).toUpperCase() + key.slice(1);
-        var tableJsonData = {};
+    let settingJsonData = {};
+    let tableDatas = excelParsingData.excelTableMap;
+    tableDatas.forEach((tableData, key) => {
+        let fileName = key.charAt(0).toUpperCase() + key.slice(1);
+        let tableJsonData = {};
         settingJsonData[fileName] = tableJsonData;
-        var ids = [];
-        var keys = [];
-        var values = [];
-        var foreign = {};
-        tableData.nameSet.forEach(function (name) {
+        let ids = [];
+        let keys = [];
+        let values = [];
+        let foreign = {};
+        tableData.nameSet.forEach((name) => {
             keys.push(name);
         });
-        tableData.foreignMap.forEach(function (foreignData, name) {
+        tableData.foreignMap.forEach((foreignData, name) => {
             foreign[name] = { dataType: foreignData.foreignTableName, dataKey: foreignData.foreignKeyName };
         });
-        var _loop_1 = function (index) {
-            var oneLineData = tableData.dataArr[index];
-            var valueData = [];
-            oneLineData.forEach(function (oneData, name) {
-                var type = tableData.typeMap.get(name);
-                var factType = convertExcelTypeToTsType(type);
+        for (let index = 0; index < tableData.dataArr.length; index++) {
+            const oneLineData = tableData.dataArr[index];
+            let valueData = [];
+            oneLineData.forEach((oneData, name) => {
+                let type = tableData.typeMap.get(name);
+                let factType = convertExcelTypeToTsType(type);
                 if (oneData !== undefined && oneData !== null) {
                     if (type.indexOf("[]") !== -1) {
-                        var newValue = oneData;
+                        let newValue = oneData;
                         newValue = newValue.split("[")[1];
                         newValue = newValue.split("]")[0];
-                        var valueDataArr = newValue.split(",");
+                        let valueDataArr = newValue.split(",");
                         if (factType.indexOf("number") !== -1) {
-                            for (var index_1 = 0; index_1 < valueDataArr.length; index_1++) {
-                                valueDataArr[index_1] = parseFloat(valueDataArr[index_1]);
+                            for (let index = 0; index < valueDataArr.length; index++) {
+                                valueDataArr[index] = parseFloat(valueDataArr[index]);
                             }
                         }
                         else if (factType.indexOf("boolean") !== -1) {
-                            for (var index_2 = 0; index_2 < valueDataArr.length; index_2++) {
-                                if (valueDataArr[index_2] === "true") {
-                                    valueDataArr[index_2] = true;
+                            for (let index = 0; index < valueDataArr.length; index++) {
+                                if (valueDataArr[index] === "true") {
+                                    valueDataArr[index] = true;
                                 }
-                                else if (valueDataArr[index_2] === "false") {
-                                    valueDataArr[index_2] = false;
+                                else if (valueDataArr[index] === "false") {
+                                    valueDataArr[index] = false;
                                 }
                                 else {
-                                    console.error("error to convert boolean " + valueDataArr[index_2]);
+                                    console.error("error to convert boolean " + valueDataArr[index]);
                                 }
                             }
                         }
@@ -75,23 +75,20 @@ export function doCreateTsJsonData(excelParsingData, projectResource) {
                 }
             });
             values.push(valueData);
-        };
-        for (var index = 0; index < tableData.dataArr.length; index++) {
-            _loop_1(index);
         }
         tableJsonData.ids = ids;
         tableJsonData.keys = keys;
         tableJsonData.values = values;
         tableJsonData.foreign = foreign;
     });
-    var writeDirPath = projectResource + JypFrameDefine.frameCodeCreateExcelDataResName;
-    var writePath = writeDirPath + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".json";
+    let writeDirPath = projectResource + JypFrameDefine.frameCodeCreateExcelDataResName;
+    let writePath = writeDirPath + "/" + JypFrameDefine.frameCodeCreateExcelDataResName + ".json";
     removeDir(writeDirPath);
     createAndWriteFileSync(writePath, JSON.stringify(settingJsonData, null, 4));
     console.log("excel转换json数据完成");
 }
 export function createTsJsonData(excelDirPath, projectResource) {
-    var excelParsingData = new ExcelParsingData(excelDirPath, true);
+    let excelParsingData = new ExcelParsingData(excelDirPath, true);
     doCreateTsJsonData(excelParsingData, projectResource);
 }
 // createTsJsonData("F:/creatorProject/creatorPlugin_3_0_0_preview/excel", "F:/creatorProject/creatorPlugin_3_0_0_preview/assets/resources/")

@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 export function createAndWriteFileSync(filePath, content) {
-    var arr = filePath.split(path.sep);
-    var dir = arr[0];
-    for (var i = 1; i < arr.length; i++) {
+    const arr = filePath.split(path.sep);
+    let dir = arr[0];
+    for (let i = 1; i < arr.length; i++) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
@@ -21,10 +21,10 @@ export function createAndWriteFileSync(filePath, content) {
 }
 export function removeDir(dir) {
     if (fs.existsSync(dir)) {
-        var files = fs.readdirSync(dir);
+        let files = fs.readdirSync(dir);
         for (var i = 0; i < files.length; i++) {
-            var newPath = path.join(dir, files[i]);
-            var stat = fs.statSync(newPath);
+            let newPath = path.join(dir, files[i]);
+            let stat = fs.statSync(newPath);
             if (stat.isDirectory()) {
                 //如果是文件夹就递归下去
                 removeDir(newPath);

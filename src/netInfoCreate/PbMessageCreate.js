@@ -5,39 +5,38 @@ import * as rd from "rd";
 import * as path from "path";
 import { createAndWriteFileSync } from "../common/CommonTool";
 import { createPbts } from "../common/CreatePBTs";
-var ProtoData = /** @class */ (function () {
-    function ProtoData() {
+class ProtoData {
+    constructor() {
         this.content = "";
         this.isRes = true;
         this.packageName = "";
     }
-    return ProtoData;
-}());
+}
 // 收发协议必须以Res和Req結尾
 function encodePbData(pbPaths) {
-    var pbDatas = [];
-    for (var i = 0; i < pbPaths.length; i++) {
-        var filePath = pbPaths[i];
+    let pbDatas = [];
+    for (let i = 0; i < pbPaths.length; i++) {
+        let filePath = pbPaths[i];
         if (fs.statSync(filePath).isDirectory()) {
             continue;
         }
         // 去掉注释
-        var dataStr = fs.readFileSync(filePath).toString();
-        var commentStr = dataStr.match(/\/\/[^\n\r]+/g);
-        for (var index = 0; index < commentStr.length; index++) {
-            var element = commentStr[index];
+        let dataStr = fs.readFileSync(filePath).toString();
+        let commentStr = dataStr.match(/\/\/[^\n\r]+/g);
+        for (let index = 0; index < commentStr.length; index++) {
+            const element = commentStr[index];
             dataStr = dataStr.replace(element, "");
         }
-        var packageName = dataStr
+        const packageName = dataStr
             .match(/package [\w]+;/)[0]
             .replace("package", "")
             .replace(";", "")
             .trim();
-        var allMessageData = dataStr.match(/(message )\S+(\s{0,}{)/g);
-        for (var j = 0; j < allMessageData.length; j++) {
-            var pbData = new ProtoData();
-            var message = allMessageData[j];
-            var match = message.toString().match(/\S+(Res )/g);
+        let allMessageData = dataStr.match(/(message )\S+(\s{0,}{)/g);
+        for (let j = 0; j < allMessageData.length; j++) {
+            let pbData = new ProtoData();
+            let message = allMessageData[j];
+            let match = message.toString().match(/\S+(Res )/g);
             if (!match) {
                 match = message.toString().match(/\S+(Res{)/g);
             }
@@ -72,17 +71,17 @@ export function createServerPbMessage(pbDirPath, pbCreateDirPath, callback) {
     _doCreateNetMessage(pbDirPath, pbCreateDirPath, "Req", callback);
 }
 function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
-    var protoFiles = rd.readSync(pbDirPath);
-    var pbDatas = encodePbData(protoFiles);
-    var fileAllFileMap = new Set();
+    let protoFiles = rd.readSync(pbDirPath);
+    let pbDatas = encodePbData(protoFiles);
+    let fileAllFileMap = new Set();
     if (fs.existsSync(pbCreateDirPath)) {
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
     }
-    var netPbClassRef = "export class NetPbClassRef {\n";
-    var netMsgRef = "export class NetMsgRef {\n";
-    var packageName = "";
+    let netPbClassRef = "export class NetPbClassRef {\n";
+    let netMsgRef = "export class NetMsgRef {\n";
+    let packageName = "";
     // 写入netMessage信息
-    pbDatas.forEach(function (pbData) {
+    pbDatas.forEach((pbData) => {
         if (pbData.content.lastIndexOf(matchStr) !== -1) {
             if (!packageName) {
                 packageName = pbData.packageName;
@@ -90,26 +89,26 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
             else if (packageName !== pbData.packageName) {
                 console.error("packageName must same. packageName1:" + packageName + " packageName2:" + pbData.packageName);
             }
-            var exportStr = "import { " + pbData.packageName + " } from './" + pbData.packageName + "'\n";
-            exportStr += "export function " + pbData.content + "Handle(res: " + pbData.packageName + "." + pbData.content + ") {}\n";
-            var filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
+            let exportStr = `import { ${pbData.packageName} } from './${pbData.packageName}'\n`;
+            exportStr += `export function ${pbData.content}Handle(res: ${pbData.packageName}.${pbData.content}) {}\n`;
+            let filePath = path.join(pbCreateDirPath, pbData.content + ".ts");
             if (!fs.existsSync(filePath)) {
                 createAndWriteFileSync(filePath, exportStr);
             }
             if (fileAllFileMap.has(filePath)) {
                 fileAllFileMap.delete(filePath);
             }
-            netMsgRef = "import {" + pbData.content + "Handle} from './" + pbData.content + "'\n" + netMsgRef;
-            netMsgRef += "    static readonly " + pbData.content + "Handle = " + pbData.content + "Handle\n";
-            netPbClassRef += "    static readonly " + pbData.content + " = " + pbData.packageName + "." + pbData.content + "\n";
+            netMsgRef = `import {${pbData.content}Handle} from './${pbData.content}'\n` + netMsgRef;
+            netMsgRef += `    static readonly ${pbData.content}Handle = ${pbData.content}Handle\n`;
+            netPbClassRef += `    static readonly ${pbData.content} = ${pbData.packageName}.${pbData.content}\n`;
         }
     });
     netMsgRef += "}";
     netPbClassRef += "}";
-    netPbClassRef = "import { " + packageName + " } from './" + packageName + "'\n" + netPbClassRef;
-    var refPath = path.join(pbCreateDirPath, "NetMsgRef.ts");
-    var pbRefPath = path.join(pbCreateDirPath, "NetPbClassRef.ts");
-    fileAllFileMap.forEach(function (value) {
+    netPbClassRef = `import { ${packageName} } from './${packageName}'\n` + netPbClassRef;
+    let refPath = path.join(pbCreateDirPath, "NetMsgRef.ts");
+    let pbRefPath = path.join(pbCreateDirPath, "NetPbClassRef.ts");
+    fileAllFileMap.forEach((value) => {
         if (value.lastIndexOf(".ts") !== -1 &&
             value.lastIndexOf(".meta") === -1 &&
             value.lastIndexOf(".d.ts") === -1 &&
@@ -120,16 +119,16 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr, callback) {
     });
     createAndWriteFileSync(refPath, netMsgRef);
     createAndWriteFileSync(pbRefPath, netPbClassRef);
-    createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
+    createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
         // 仅在客户端使用的时候需要替换
         if (matchStr == "Res") {
             // 通过将protobufjs 导入项目为插件的方式 解决es6调用commonjs的问题
-            var data = fs.readFileSync(pbCreateDirPath + "/" + packageName + ".js");
-            var content = data.toString();
-            content = content.replace("import * as $protobuf from \"protobufjs/minimal\"", "const $protobuf = protobuf");
-            createAndWriteFileSync(pbCreateDirPath + "/" + packageName + ".js", content);
+            let data = fs.readFileSync(`${pbCreateDirPath}/${packageName}.js`);
+            let content = data.toString();
+            content = content.replace(`import * as $protobuf from "protobufjs/minimal"`, "const $protobuf = protobuf");
+            createAndWriteFileSync(`${pbCreateDirPath}/${packageName}.js`, content);
         }
-        console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
+        console.log(`生成${packageName} ts文件内容完成`);
         if (callback) {
             callback();
         }

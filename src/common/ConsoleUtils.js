@@ -1,4 +1,4 @@
-export var styles = {
+export const styles = {
     bold: ["\x1B[1m", "\x1B[22m"],
     italic: ["\x1B[3m", "\x1B[23m"],
     underline: ["\x1B[4m", "\x1B[24m"],
@@ -24,15 +24,15 @@ export var styles = {
     yellowBG: ["\x1B[43m", "\x1B[49m"],
 };
 export function formatConsole(contents, color, style, colorBG) {
-    var colorHead = color === undefined ? "" : styles[color][0];
-    var colorTail = color === undefined ? "" : styles[color][1];
-    var colorBGHead = colorBG === undefined ? "" : styles[colorBG][0];
-    var colorBGTail = colorBG === undefined ? "" : styles[colorBG][1];
-    var styleHead = style === undefined ? "" : styles[style][0];
-    var styleTail = style === undefined ? "" : styles[style][1];
+    let colorHead = color === undefined ? "" : styles[color][0];
+    let colorTail = color === undefined ? "" : styles[color][1];
+    let colorBGHead = colorBG === undefined ? "" : styles[colorBG][0];
+    let colorBGTail = colorBG === undefined ? "" : styles[colorBG][1];
+    let styleHead = style === undefined ? "" : styles[style][0];
+    let styleTail = style === undefined ? "" : styles[style][1];
     return styleHead + colorHead + colorBGHead + contents.join(" ") + colorBGTail + colorTail + styleTail;
 }
 export function printStep(step, desc) {
-    console.log(formatConsole([step + "." + desc], "grey"));
+    console.log(formatConsole([`${step}.${desc}`], "grey"));
 }
 //# sourceMappingURL=ConsoleUtils.js.map

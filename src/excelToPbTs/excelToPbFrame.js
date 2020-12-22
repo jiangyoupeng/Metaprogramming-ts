@@ -8,15 +8,15 @@ import { removeDir } from "../common/CommonTool";
 // 生成的临时 proto会删除
 export function excelToPbFrame(excelDirPath, projectSriptDir, projectResDir) {
     console.log("当前启用数据框架: pbTs");
-    var excelParsingData = new ExcelParsingData(excelDirPath, true);
+    let excelParsingData = new ExcelParsingData(excelDirPath, true);
     // 生成pb文件
-    var protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto";
-    var protoFilePath = protoDirPath + "/tmpProto.proto";
+    let protoDirPath = __dirname.substring(0, __dirname.lastIndexOf("Metaprogramming-ts")) + "/Metaprogramming-ts/ts/excelToPbTs/tmpProto";
+    let protoFilePath = protoDirPath + "/tmpProto.proto";
     removeDir(protoDirPath);
     doExcelToProtoFile(excelParsingData, protoDirPath, "tmpProto");
-    var writeDirPath = projectResDir + JypFrameDefine.frameCodeCreateExcelDataResName;
+    let writeDirPath = projectResDir + JypFrameDefine.frameCodeCreateExcelDataResName;
     excelToPbData(excelParsingData, protoFilePath, writeDirPath);
-    excelToPbTs(excelParsingData, projectSriptDir, protoDirPath, function () {
+    excelToPbTs(excelParsingData, projectSriptDir, protoDirPath, () => {
         console.log("excelpb 框架代码和数据生成完毕");
         removeDir(protoDirPath);
     });
