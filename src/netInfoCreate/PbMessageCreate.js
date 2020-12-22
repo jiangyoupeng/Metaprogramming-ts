@@ -83,6 +83,7 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr) {
     if (fs.existsSync(pbCreateDirPath)) {
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath));
     }
+    var netPbClassRef = "export class NetPbClassRef {\n";
     var netMsgRef = "export class NetMsgRef {\n";
     var packageName = "";
     // 写入netMessage信息
@@ -105,20 +106,26 @@ function _doCreateNetMessage(pbDirPath, pbCreateDirPath, matchStr) {
             }
             netMsgRef = "import {" + pbData.content + "Handle} from './" + pbData.content + "'\n" + netMsgRef;
             netMsgRef += "    static readonly " + pbData.content + "Handle = " + pbData.content + "Handle\n";
+            netPbClassRef += "    static readonly " + pbData.content + " = " + pbData.packageName + "." + pbData.content + "\n";
         }
     });
     netMsgRef += "}";
+    netPbClassRef += "}";
+    netPbClassRef = "import { " + packageName + " } from './" + packageName + "'\n" + netPbClassRef;
     var refPath = path.join(pbCreateDirPath, "NetMsgRef.ts");
+    var pbRefPath = path.join(pbCreateDirPath, "NetPbClassRef.ts");
     fileAllFileMap.forEach(function (value) {
         if (value.lastIndexOf(".ts") !== -1 &&
             value.lastIndexOf(".meta") === -1 &&
             value.lastIndexOf(".d.ts") === -1 &&
-            value.lastIndexOf(refPath) === -1) {
+            value.lastIndexOf(refPath) === -1 &&
+            value.lastIndexOf(pbRefPath) === -1) {
             console.warn("不存在pb数据内的文件:" + value);
         }
     });
     console.log(netMsgRef);
     CommonTool_1.createAndWriteFileSync(refPath, netMsgRef);
+    CommonTool_1.createAndWriteFileSync(pbRefPath, netPbClassRef);
     CreatePBTs_1.createPbts(pbCreateDirPath, pbDirPath, packageName, function () {
         console.log("\u751F\u6210" + packageName + " ts\u6587\u4EF6\u5185\u5BB9\u5B8C\u6210");
     });
