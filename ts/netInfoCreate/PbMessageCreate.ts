@@ -84,6 +84,7 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
         fileAllFileMap = new Set(rd.readSync(pbCreateDirPath))
     }
 
+    let netPbClassRef = "export class NetPbClassRef {\n"
     let netMsgRef = "export class NetMsgRef {\n"
     let packageName = ""
     // 写入netMessage信息
@@ -105,17 +106,22 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
             }
             netMsgRef = `import {${pbData.content}Handle} from './${pbData.content}'\n` + netMsgRef
             netMsgRef += `    static readonly ${pbData.content}Handle = ${pbData.content}Handle\n`
+            netPbClassRef += `    static readonly ${pbData.content} = ${pbData.packageName}.${pbData.content}\n`
         }
     })
     netMsgRef += "}"
+    netPbClassRef += "}"
 
+    netPbClassRef = `import { ${packageName} } from './${packageName}'\n` + netPbClassRef
     let refPath = path.join(pbCreateDirPath, "NetMsgRef.ts")
+    let pbRefPath = path.join(pbCreateDirPath, "NetPbClassRef.ts")
     fileAllFileMap.forEach((value) => {
         if (
             value.lastIndexOf(".ts") !== -1 &&
             value.lastIndexOf(".meta") === -1 &&
             value.lastIndexOf(".d.ts") === -1 &&
-            value.lastIndexOf(refPath) === -1
+            value.lastIndexOf(refPath) === -1 &&
+            value.lastIndexOf(pbRefPath) === -1
         ) {
             console.warn("不存在pb数据内的文件:" + value)
         }
@@ -123,6 +129,7 @@ function _doCreateNetMessage(pbDirPath: string, pbCreateDirPath: string, matchSt
 
     console.log(netMsgRef)
     createAndWriteFileSync(refPath, netMsgRef)
+    createAndWriteFileSync(pbRefPath, netPbClassRef)
     createPbts(pbCreateDirPath, pbDirPath, packageName, () => {
         console.log(`生成${packageName} ts文件内容完成`)
     })
