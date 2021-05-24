@@ -1,0 +1,1 @@
+export declare function deparseToTs(ast: any, whitespace_enabled: boolean, indent_text: string, ud: Map<string, string>, vd: Map<string, string>, ad: Map<string, string>, sdm: Map<string, Map<string, string>>, d: Map<string, number | string>, isVert: boolean, hash: string): string;

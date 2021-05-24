@@ -18,8 +18,11 @@
   "homepage": "https://github.com/jiangyoupeng/Metaprogramming-ts#readme",
   "dependencies": {
     "child_process": "^1.0.2",
+    "glsl-parser": "^2.0.1",
+    "glsl-tokenizer": "^2.1.5",
     "protobufjs": "^6.10.2",
     "rd": "^2.0.1",
+    "spark-md5": "^3.0.1",
     "xlsx": "^0.16.9"
   },
   "devDependencies": {
